@@ -14,11 +14,19 @@ public class Order {
     private Status status;
     private Payment paymentType;
 
-    public Order() {}
+    public Order(int id, List<ProductOrder> products, User client, Date date, Status status, Payment paymentType) {
+        this.id = id;
+        this.products = products;
+        this.client = client;
+        this.date = date;
+        this.status = status;
+        this.paymentType = paymentType;
+    }
 
     public Integer getId() {
         return id;
     }
+
     public List<ProductOrder> getProducts() {
         return products;
     }

@@ -12,6 +12,16 @@ public class Product {
     private String color;
     private Integer stock;
 
+    public Product(Integer id, String name, Size size, Double price, Gender gender, String color, Integer stock) {
+        this.id = id;
+        this.name = name;
+        this.size = size;
+        this.price = price;
+        this.gender = gender;
+        this.color = color;
+        this.stock = stock;
+    }
+
     public Integer getId() {
         return id;
     }

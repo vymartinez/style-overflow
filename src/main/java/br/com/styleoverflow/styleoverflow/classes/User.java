@@ -27,7 +27,7 @@ public class User {
         this.cep = cep;
         this.address = address;
         this.gender = gender;
-        this.role = Role.CLIENT;  // Default role set to CLIENT
+        this.role = role;
         this.orders = orders;
     }
 

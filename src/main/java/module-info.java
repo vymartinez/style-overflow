@@ -8,4 +8,6 @@ module br.com.styleoverflow.styleoverflow {
 
     opens br.com.styleoverflow.styleoverflow to javafx.fxml;
     exports br.com.styleoverflow.styleoverflow;
+    exports br.com.styleoverflow.styleoverflow.screens;
+    exports br.com.styleoverflow.styleoverflow.classes;
 }

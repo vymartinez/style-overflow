@@ -68,8 +68,8 @@ public class AdminDashboard {
         table.setPrefHeight(200);
 
         table.getItems().addAll(
-                new Product(1, "Camisa Dev", Size.G, 89.99, Gender.MALE, "Preta", 10),
-                new Product(2, "Hoodie Java", Size.M, 129.99, Gender.FEMALE, "Azul", 5)
+                //new Product(1, "Camisa Dev", Size.G, 89.99, Gender.MALE, "Preta", 10),
+                //new Product(2, "Hoodie Java", Size.M, 129.99, Gender.FEMALE, "Azul", 5)
         );
 
         VBox topBox = new VBox(10, title, table);

@@ -1,96 +1,119 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.classes.Order;
+import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Size;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class AdminDashboard {
 
-    //private final AdminService adminService = new AdminService();
+//    private final ArrayList<Product> products;
+//    private final AdminService adminService;
+//
+//    public AdminDashboard(ArrayList<Product> products) {
+//        this.products = adminService.getAllProducts();
+//    }
 
-    public Parent getView() {
-        TabPane tabPane = new TabPane();
-        tabPane.getTabs().addAll(productTab(), orderTab());
+    public BorderPane getView(Stage stage) {
+        Label title = new Label("Painel de Administração");
+        title.getStyleClass().add("text-primary");
 
-        BorderPane root = new BorderPane(tabPane);
-        root.setPadding(new Insets(20));
-        return root;
-    }
+        Button registerButton = new Button("Cadastrar Produto");
+        registerButton.setOnAction(e -> {
+            stage.getScene().setRoot(new ProductRegister().getView(stage));
+        });
+        registerButton.getStyleClass().add("btn-primary");
 
-    private Tab productTab() {
-        VBox formBox = new VBox(10);
-        formBox.setPadding(new Insets(20));
-
-        TextField name = new TextField();
-        ComboBox<String> size = new ComboBox<>();
-        size.getItems().addAll("PP", "P", "M", "G", "GG");
-
-        ComboBox<String> gender = new ComboBox<>();
-        gender.getItems().addAll("MALE", "FEMALE");
-
-        TextField color = new TextField();
-        TextField stock = new TextField();
-        TextField price = new TextField();
-
-        Button registerBtn = new Button("Registrar Produto");
-        registerBtn.getStyleClass().add("btn");
-        registerBtn.setOnAction(e -> {
-//                adminService.registerProduct(
-//                name.getText(), size.getValue(), gender.getValue(), color.getText(),
-//                Integer.parseInt(stock.getText()), Double.parseDouble(price.getText()))
+        Button logoutButton = new Button("Logout");
+        logoutButton.getStyleClass().add("btn-primary");
+        logoutButton.setOnAction(e -> {
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
         });
 
-        formBox.getChildren().addAll(
-                new Label("Nome do Produto:"), name,
-                new Label("Tamanho:"), size,
-                new Label("Gênero:"), gender,
-                new Label("Cor:"), color,
-                new Label("Estoque:"), stock,
-                new Label("Preço:"), price,
-                registerBtn
+        TableView<Product> table = new TableView<>();
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        TableColumn<Product, Integer> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<Product, String> nameCol = new TableColumn<>("Nome");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Product, String> sizeCol = new TableColumn<>("Tamanho");
+        sizeCol.setCellValueFactory(new PropertyValueFactory<>("size"));
+
+        TableColumn<Product, Double> priceCol = new TableColumn<>("Preço");
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        TableColumn<Product, String> colorCol = new TableColumn<>("Cor");
+        colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
+
+        TableColumn<Product, Integer> stockCol = new TableColumn<>("Em estoque");
+        stockCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+
+        TableColumn<Product, Void> actionCol = new TableColumn<>("Ações");
+        actionCol.setCellFactory(getActionCellFactory(stage));
+
+        table.getColumns().addAll(idCol, nameCol, sizeCol, priceCol, colorCol, stockCol, actionCol);
+        table.setPrefHeight(200);
+
+        table.getItems().addAll(
+                new Product(1, "Camisa Dev", Size.G, 89.99, Gender.MALE, "Preta", 10),
+                new Product(2, "Hoodie Java", Size.M, 129.99, Gender.FEMALE, "Azul", 5)
         );
 
-        Tab tab = new Tab("Produtos", formBox);
-        tab.setClosable(false);
-        return tab;
+        VBox topBox = new VBox(10, title, table);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setPadding(new Insets(10));
+
+        VBox bottomBox = new VBox(10, registerButton, logoutButton);
+        bottomBox.setAlignment(Pos.BOTTOM_CENTER);
+        bottomBox.setPadding(new Insets(10));
+
+        BorderPane layout = new BorderPane();
+        layout.setCenter(topBox);
+        layout.setBottom(bottomBox);
+        layout.setPadding(new Insets(20));
+
+        return layout;
     }
 
-    private Tab orderTab() {
-        VBox vbox = new VBox(10);
-        vbox.setPadding(new Insets(20));
+    private Callback<TableColumn<Product, Void>, TableCell<Product, Void>> getActionCellFactory(Stage stage) {
+        return param -> new TableCell<>() {
+            private final Button editBtn = new Button("Editar");
+            private final Button deleteBtn = new Button("Excluir");
+            private final HBox pane = new HBox(5, editBtn, deleteBtn);
 
-        TableView<Order> table = new TableView<>();
-        table.setPlaceholder(new Label("Sem pedidos."));
+            {
+                editBtn.getStyleClass().add("btn-primary");
+                deleteBtn.getStyleClass().add("btn-primary-danger");
 
-//        TableColumn<Order, Integer> idCol = new TableColumn<>("ID");
-//        idCol.setCellValueFactory(cell -> cell.getValue().id().asObject());
-//
-//        TableColumn<Order, String> clientCol = new TableColumn<>("Cliente");
-//        clientCol.setCellValueFactory(cell -> cell.getValue().getClient().getName());
-//
-//        TableColumn<Order, String> dateCol = new TableColumn<>("Data");
-//        dateCol.setCellValueFactory(cell -> cell.getValue().getDate());
-//
-//        TableColumn<Order, String> statusCol = new TableColumn<>("Status");
-//        statusCol.setCellValueFactory(cell -> cell.getValue().getStatus());
+                editBtn.setOnAction(e -> {
+                    Product product = getTableView().getItems().get(getIndex());
+                    stage.getScene().setRoot(new ProductEdit(product).getView(stage));
+                });
 
-        //table.getColumns().addAll(idCol, clientCol, dateCol, statusCol);
+                deleteBtn.setOnAction(e -> {
+                    Product product = getTableView().getItems().get(getIndex());
+                    getTableView().getItems().remove(product);
+                });
+            }
 
-        Button sortBtn = new Button("Ordenar por Data");
-        sortBtn.getStyleClass().add("btn");
-        sortBtn.setOnAction(e -> {
-//            List<Order> orders = adminService.sortOrdersByDate();
-//            table.getItems().setAll(orders);
-        });
-
-        vbox.getChildren().addAll(sortBtn, table);
-
-        Tab tab = new Tab("Pedidos", vbox);
-        tab.setClosable(false);
-        return tab;
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : pane);
+            }
+        };
     }
 }

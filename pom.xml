@@ -75,7 +75,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                br.com.styleoverflow.styleoverflow/br.com.styleoverflow.styleoverflow.HelloApplication
+                                br.com.styleoverflow.styleoverflow/br.com.styleoverflow.styleoverflow.App
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

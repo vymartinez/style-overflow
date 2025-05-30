@@ -25,7 +25,6 @@ public class CartProduct {
         this.quantity = quantity;
     }
 
-
     public Double calculateSubtotal() {
         return product.getPrice() * quantity;
     }

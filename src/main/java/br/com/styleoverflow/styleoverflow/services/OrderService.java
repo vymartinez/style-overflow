@@ -1,4 +1,42 @@
 package br.com.styleoverflow.styleoverflow.services;
 
+import br.com.styleoverflow.styleoverflow.ConnectionFactory;
+import br.com.styleoverflow.styleoverflow.DTO.CreateOrderDTO;
+import br.com.styleoverflow.styleoverflow.DTO.ProductOrderDTO;
+import br.com.styleoverflow.styleoverflow.DTO.UpdateOrderDTO;
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
+import br.com.styleoverflow.styleoverflow.dao.OrderDAO;
+import br.com.styleoverflow.styleoverflow.enums.Payment;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
 public class OrderService {
+
+    private ConnectionFactory factory;
+
+    public OrderService(ConnectionFactory factory) {
+        this.factory = new ConnectionFactory();
+    }
+
+    public void createOrder(Integer userId, Payment paymentType, List<CartProduct> cartItems) {
+        Connection connection = factory.getConnection();
+
+        // implementar tratamentos de erro
+
+        List<ProductOrderDTO> productOrderDTOList = new ArrayList<>();
+        cartItems.forEach(cartProduct -> {
+            productOrderDTOList.add(new ProductOrderDTO(cartProduct.getProduct().getId(), cartProduct.getQuantity()));
+        });
+        new OrderDAO(connection).createOrder(new CreateOrderDTO(userId, paymentType, productOrderDTOList));
+    }
+
+    public void updateOrder(Payment paymentType, Integer orderId) {
+        Connection connection = factory.getConnection();
+
+        // implementar tratamentos de erro
+
+        new OrderDAO(connection).updateOrder(new UpdateOrderDTO(paymentType), orderId);
+    }
 }

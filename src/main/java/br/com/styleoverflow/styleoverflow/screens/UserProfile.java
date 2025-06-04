@@ -10,173 +10,156 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class UserProfile extends Parent {
+public class UserProfile {
 
-    private VBox profileBox;
-    private Label nameLabel, emailLabel, bioLabel, feedbackLabel;
-    private TextField nameField, emailField;
-    private TextArea bioArea;
-    private Button editButton, saveButton, cancelButton, deleteButton;
-    private HBox buttonBox;
-    private StackPane avatarPane;
-
-    public Parent getUserProfile(Stage stage) {
-        profileBox = new VBox(20);
-        profileBox.setAlignment(Pos.CENTER);
-        profileBox.getStyleClass().add("root");
-
-        // Avatar
-        avatarPane = createAvatar("UN");
+    public static Parent showProfile(Stage stage) {
+        VBox root = new VBox(30);
+        root.setAlignment(Pos.TOP_CENTER);
+        root.getStyleClass().add("root");
 
         Label title = new Label("Perfil do Usuário");
-        title.setFont(Font.font("Fira Code", FontWeight.BOLD, 24));
         title.getStyleClass().add("text-primary");
 
-        nameLabel = new Label("User Name");
-        emailLabel = new Label("User Email");
-        bioLabel = new Label("Bio do usuário");
-        bioLabel.setWrapText(true);
+        // Avatar
+        Circle avatarCircle = new Circle(50, Color.web("#6c63ff"));
+        Label initialsLabel = new Label("UN");
+        initialsLabel.setTextFill(Color.WHITE);
+        initialsLabel.setFont(Font.font("Arial", 28));
+        StackPane avatarPane = new StackPane(avatarCircle, initialsLabel);
 
-        nameField = new TextField();
+        // Labels e Inputs
+        Label nameLabel = new Label("User Name");
+        Label emailLabel = new Label("User Email");
+        Label bioLabel = new Label("Bio do usuário");
+
+        nameLabel.getStyleClass().add("label");
+        emailLabel.getStyleClass().add("label");
+        bioLabel.getStyleClass().add("label");
+
+        TextField nameField = new TextField();
         nameField.setPromptText("Nome");
         nameField.getStyleClass().add("max-fit");
 
-        emailField = new TextField();
+        TextField emailField = new TextField();
         emailField.setPromptText("Email");
         emailField.getStyleClass().add("max-fit");
 
-        bioArea = new TextArea();
+        TextArea bioArea = new TextArea();
         bioArea.setPromptText("Bio");
-        bioArea.setPrefRowCount(3);
+        bioArea.setPrefRowCount(4);
         bioArea.getStyleClass().add("max-fit");
 
         nameField.setVisible(false);
         emailField.setVisible(false);
         bioArea.setVisible(false);
 
-        feedbackLabel = new Label();
+        Label feedbackLabel = new Label();
         feedbackLabel.setVisible(false);
 
-        editButton = new Button("Editar");
+        Button editButton = new Button("Editar");
+        Button saveButton = new Button("Salvar");
+        Button cancelButton = new Button("Cancelar");
+        Button deleteButton = new Button("Excluir");
+
         editButton.getStyleClass().add("btn-primary");
-
-        saveButton = new Button("Salvar");
         saveButton.getStyleClass().add("btn-primary");
-        saveButton.setVisible(false);
+        cancelButton.getStyleClass().add("btn-primary");
+        deleteButton.getStyleClass().add("btn-primary-danger");
 
-        cancelButton = new Button("Cancelar");
-        cancelButton.getStyleClass().add("btn-secondary");
+        saveButton.setVisible(false);
         cancelButton.setVisible(false);
 
-        deleteButton = new Button("Excluir");
-        deleteButton.getStyleClass().add("btn-danger");
+        VBox nameBox = new VBox(5, nameLabel, nameField);
+        VBox emailBox = new VBox(5, emailLabel, emailField);
+        VBox bioBox = new VBox(5, bioLabel, bioArea);
 
-        buttonBox = new HBox(10, editButton, saveButton, cancelButton, deleteButton);
+        nameBox.setAlignment(Pos.CENTER);
+        emailBox.setAlignment(Pos.CENTER);
+        bioBox.setAlignment(Pos.CENTER);
+
+        VBox fieldsBox = new VBox(15, nameBox, emailBox, bioBox);
+        fieldsBox.setAlignment(Pos.CENTER);
+
+        HBox buttonBox = new HBox(15, editButton, saveButton, cancelButton, deleteButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        VBox fieldsBox = new VBox(10);
-        fieldsBox.setAlignment(Pos.CENTER);
-        fieldsBox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, bioLabel, bioArea);
+        VBox content = new VBox(30, title, avatarPane, fieldsBox, feedbackLabel, buttonBox);
+        content.setAlignment(Pos.TOP_CENTER);
 
-        profileBox.getChildren().addAll(title, avatarPane, fieldsBox, feedbackLabel, buttonBox);
+        root.getChildren().add(content);
 
         // Eventos
-        editButton.setOnAction(e -> enterEditMode());
-        saveButton.setOnAction(e -> saveProfile());
-        cancelButton.setOnAction(e -> exitEditMode());
-        deleteButton.setOnAction(e -> deleteProfile());
+        editButton.setOnAction(e -> {
+            nameLabel.setVisible(false);
+            emailLabel.setVisible(false);
+            bioLabel.setVisible(false);
 
-        return profileBox;
-    }
+            nameField.setVisible(true);
+            emailField.setVisible(true);
+            bioArea.setVisible(true);
 
-    private StackPane createAvatar(String initials) {
-        Circle circle = new Circle(40, Color.web("#6c63ff"));
-        Label initialsLabel = new Label(initials);
-        initialsLabel.setTextFill(Color.WHITE);
-        initialsLabel.setFont(Font.font("Arial", 24));
-        StackPane avatar = new StackPane(circle, initialsLabel);
-        return avatar;
-    }
+            editButton.setVisible(false);
+            saveButton.setVisible(true);
+            cancelButton.setVisible(true);
+        });
 
-    private void enterEditMode() {
-        nameLabel.setVisible(false);
-        emailLabel.setVisible(false);
-        bioLabel.setVisible(false);
+        cancelButton.setOnAction(e -> {
+            nameField.setVisible(false);
+            emailField.setVisible(false);
+            bioArea.setVisible(false);
 
-        nameField.setVisible(true);
-        emailField.setVisible(true);
-        bioArea.setVisible(true);
+            nameLabel.setVisible(true);
+            emailLabel.setVisible(true);
+            bioLabel.setVisible(true);
 
-        editButton.setVisible(false);
-        saveButton.setVisible(true);
-        cancelButton.setVisible(true);
-    }
+            editButton.setVisible(true);
+            saveButton.setVisible(false);
+            cancelButton.setVisible(false);
+            feedbackLabel.setVisible(false);
+        });
 
-    private void exitEditMode() {
-        nameLabel.setVisible(true);
-        emailLabel.setVisible(true);
-        bioLabel.setVisible(true);
+        saveButton.setOnAction(e -> {
+            if (nameField.getText().isEmpty() || emailField.getText().isEmpty()) {
+                feedbackLabel.setText("Nome e email são obrigatórios.");
+                feedbackLabel.getStyleClass().setAll("text-danger");
+                feedbackLabel.setVisible(true);
+                return;
+            }
 
-        nameField.setVisible(false);
-        emailField.setVisible(false);
-        bioArea.setVisible(false);
+            nameLabel.setText(nameField.getText());
+            emailLabel.setText(emailField.getText());
+            bioLabel.setText(bioArea.getText());
 
-        editButton.setVisible(true);
-        saveButton.setVisible(false);
-        cancelButton.setVisible(false);
-    }
+            initialsLabel.setText(getInitials(nameField.getText()));
 
-    public void saveProfile() {
-        if (nameField.getText().isEmpty() || emailField.getText().isEmpty()) {
-            feedbackLabel.setText("Nome e email são obrigatórios.");
+            feedbackLabel.setText("Perfil atualizado com sucesso.");
+            feedbackLabel.getStyleClass().setAll("text-success");
+            feedbackLabel.setVisible(true);
+
+            cancelButton.fire();
+        });
+
+        deleteButton.setOnAction(e -> {
+            nameLabel.setText("User Name");
+            emailLabel.setText("User Email");
+            bioLabel.setText("Bio do usuário");
+            initialsLabel.setText("UN");
+
+            feedbackLabel.setText("Perfil excluído.");
             feedbackLabel.getStyleClass().setAll("text-danger");
             feedbackLabel.setVisible(true);
-            return;
-        }
+        });
 
-        setName(nameField.getText());
-        setEmail(emailField.getText());
-        setBio(bioArea.getText());
-        feedbackLabel.setText("Perfil atualizado com sucesso.");
-        feedbackLabel.getStyleClass().setAll("text-success");
-        feedbackLabel.setVisible(true);
-
-        exitEditMode();
+        return root;
     }
 
-    public void deleteProfile() {
-        setName("User Name");
-        setEmail("User Email");
-        setBio("Bio do usuário");
-        feedbackLabel.setText("Perfil excluído.");
-        feedbackLabel.getStyleClass().setAll("text-danger");
-        feedbackLabel.setVisible(true);
-    }
-
-    public void setName(String name) {
-        nameLabel.setText(name);
-        nameField.setText(name);
-        updateAvatarInitials(name);
-    }
-
-    public void setEmail(String email) {
-        emailLabel.setText(email);
-        emailField.setText(email);
-    }
-
-    public void setBio(String bio) {
-        bioLabel.setText(bio);
-        bioArea.setText(bio);
-    }
-
-    private void updateAvatarInitials(String name) {
+    private static String getInitials(String name) {
         String[] parts = name.trim().split(" ");
-        String initials = "";
+        StringBuilder initials = new StringBuilder();
         for (String part : parts) {
-            if (!part.isEmpty()) initials += part.charAt(0);
+            if (!part.isEmpty()) initials.append(part.charAt(0));
             if (initials.length() == 2) break;
         }
-        Label label = (Label) avatarPane.getChildren().get(1);
-        label.setText(initials.toUpperCase());
+        return initials.toString().toUpperCase();
     }
 }

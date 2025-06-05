@@ -82,6 +82,18 @@ public class LoginAndRegister {
         genderBox.setPromptText("Gênero");
         genderBox.getStyleClass().add("max-fit");
 
+        TextField addressField = new TextField();
+        addressField.setPromptText("Endereço");
+        addressField.getStyleClass().add("max-fit");
+
+        TextField cpfField = new TextField();
+        cpfField.setPromptText("CPF");
+        cpfField.getStyleClass().add("max-fit");
+
+        TextField cepField = new TextField();
+        cepField.setPromptText("CEP");
+        cepField.getStyleClass().add("max-fit");
+
         Button registerBtn = new Button("Registrar");
         registerBtn.getStyleClass().add("btn-primary");
 
@@ -100,7 +112,7 @@ public class LoginAndRegister {
         Hyperlink toLogin = new Hyperlink("Já tem conta? Entrar");
         toLogin.setOnAction(e -> stage.getScene().setRoot(showLogin(stage)));
 
-        root.getChildren().addAll(title, nameField, emailField, passwordField, cellphoneField, genderBox, registerBtn, feedback, toLogin);
+        root.getChildren().addAll(title, nameField, emailField, passwordField, cellphoneField, genderBox, cpfField, cepField, addressField, registerBtn, feedback, toLogin);
         return root;
     }
 }

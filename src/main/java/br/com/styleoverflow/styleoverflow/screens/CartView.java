@@ -1,15 +1,19 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 
 public class CartView {
@@ -26,7 +30,7 @@ public class CartView {
     }
 
 
-    public Parent getView() {
+    public Parent getView(Stage currentStage) {
         // Colunas
         TableColumn<Product, String> colNome = new TableColumn<>("Nome");
         colNome.setCellValueFactory(p -> p.getValue().nameProperty());
@@ -49,12 +53,20 @@ public class CartView {
 
         // Botões
         Button btnVoltar = new Button("Voltar");
-        btnVoltar.setOnAction(e -> voltar());
+        btnVoltar.setOnAction(e ->voltar(currentStage));
 
         Button btnRemover = new Button("Remover Selecionado");
         btnRemover.setOnAction(e -> removerSelecionado());
 
-        HBox botoes = new HBox(10, btnRemover, btnVoltar);
+        Button btnConfirmar = new Button("Confirmar compra");
+        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(OrderConfirmation.showConfirmation(currentStage, new ArrayList<>())));
+
+        btnVoltar.getStyleClass().add("btn-primary");
+        btnRemover.getStyleClass().add("btn-primary");
+        btnConfirmar.getStyleClass().add("btn-primary");
+
+        HBox botoes = new HBox(10, btnVoltar, new Separator(), btnRemover, btnConfirmar);
+        botoes.setAlignment(Pos.CENTER);
         botoes.setPadding(new Insets(10));
 
         // Total
@@ -66,8 +78,8 @@ public class CartView {
         return root;
     }
 
-    private void voltar() {
-        new CatalogView().showCatalog(currentStage); // Retorna para o catálogo
+    private void voltar(Stage stage) {
+        stage.getScene().setRoot(new CatalogView(stage).getView(stage));
     }
 
     private void removerSelecionado() {
@@ -94,10 +106,6 @@ public class CartView {
     }
 
     public void showCart(Stage stage) {
-        this.currentStage = stage;
-        Scene scene = new Scene(getView(), 600, 400);
-        stage.setScene(scene);
-        stage.setTitle("Carrinho - Style Overflow");
-        stage.show();
+        stage.getScene().setRoot(getView(stage));
     }
 }

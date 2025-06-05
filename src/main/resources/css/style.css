@@ -8,7 +8,6 @@
     -fx-background-size: 200 200;
     -fx-background-repeat: no-repeat;
     -fx-background-position: right bottom;
-
 }
 
 .max-fit {
@@ -83,3 +82,7 @@
     -fx-font-weight: bold;
 }
 
+.product-card {
+    -fx-background-color: rgba(15, 17, 26, 0.7);
+    -fx-background-radius: 8;
+}

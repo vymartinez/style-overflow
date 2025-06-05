@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 public class ProductDetail {
 
-    public static Parent showProduct(Stage stage, String nome, String descricao, double preco, String imagemUrl) {
+    public static Parent showProduct(Stage stage, String nome, double preco, String imagemUrl) {
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");
@@ -38,16 +38,6 @@ public class ProductDetail {
         Label precoLabel = new Label("Preço: R$ " + String.format("%.2f", preco));
         precoLabel.getStyleClass().add("label");
 
-        // Descrição
-        Label descricaoLabel = new Label("Descrição:");
-        descricaoLabel.getStyleClass().add("label");
-
-        TextArea descricaoArea = new TextArea(descricao);
-        descricaoArea.setEditable(false);
-        descricaoArea.setWrapText(true);
-        descricaoArea.setPrefRowCount(4);
-        descricaoArea.getStyleClass().add("max-fit");
-
         Button voltarButton = new Button("Voltar");
         voltarButton.getStyleClass().add("btn-primary");
 
@@ -56,8 +46,6 @@ public class ProductDetail {
                 productImage,
                 nomeLabel,
                 precoLabel,
-                descricaoLabel,
-                descricaoArea,
                 voltarButton
         );
         content.setAlignment(Pos.TOP_CENTER);
@@ -66,7 +54,7 @@ public class ProductDetail {
         root.getChildren().add(content);
 
         voltarButton.setOnAction(e -> {
-            stage.close(); // ou troque a cena aqui
+            stage.getScene().setRoot(new CatalogView(stage).getView(stage));
         });
 
         return root;

@@ -22,19 +22,17 @@ public class UserProfile {
 
         // Avatar
         Circle avatarCircle = new Circle(50, Color.web("#6c63ff"));
-        Label initialsLabel = new Label("UN");
+        Label initialsLabel = new Label("U");
         initialsLabel.setTextFill(Color.WHITE);
         initialsLabel.setFont(Font.font("Arial", 28));
         StackPane avatarPane = new StackPane(avatarCircle, initialsLabel);
 
         // Labels e Inputs
-        Label nameLabel = new Label("User Name");
-        Label emailLabel = new Label("User Email");
-        Label bioLabel = new Label("Bio do usuário");
+        Label nameTitle = new Label("Nome:");
+        Label nameLabel = new Label("");
 
-        nameLabel.getStyleClass().add("label");
-        emailLabel.getStyleClass().add("label");
-        bioLabel.getStyleClass().add("label");
+        Label emailTitle = new Label("Email:");
+        Label emailLabel = new Label("");
 
         TextField nameField = new TextField();
         nameField.setPromptText("Nome");
@@ -44,14 +42,8 @@ public class UserProfile {
         emailField.setPromptText("Email");
         emailField.getStyleClass().add("max-fit");
 
-        TextArea bioArea = new TextArea();
-        bioArea.setPromptText("Bio");
-        bioArea.setPrefRowCount(4);
-        bioArea.getStyleClass().add("max-fit");
-
         nameField.setVisible(false);
         emailField.setVisible(false);
-        bioArea.setVisible(false);
 
         Label feedbackLabel = new Label();
         feedbackLabel.setVisible(false);
@@ -60,30 +52,32 @@ public class UserProfile {
         Button saveButton = new Button("Salvar");
         Button cancelButton = new Button("Cancelar");
         Button deleteButton = new Button("Excluir");
+        Button backButton = new Button("Voltar");
 
         editButton.getStyleClass().add("btn-primary");
         saveButton.getStyleClass().add("btn-primary");
         cancelButton.getStyleClass().add("btn-primary");
         deleteButton.getStyleClass().add("btn-primary-danger");
+        backButton.getStyleClass().add("btn-primary");
 
         saveButton.setVisible(false);
         cancelButton.setVisible(false);
 
-        VBox nameBox = new VBox(5, nameLabel, nameField);
-        VBox emailBox = new VBox(5, emailLabel, emailField);
-        VBox bioBox = new VBox(5, bioLabel, bioArea);
+        VBox nameBox = new VBox(2, nameTitle, nameLabel, nameField);
+        VBox emailBox = new VBox(2, emailTitle, emailLabel, emailField);
 
         nameBox.setAlignment(Pos.CENTER);
         emailBox.setAlignment(Pos.CENTER);
-        bioBox.setAlignment(Pos.CENTER);
 
-        VBox fieldsBox = new VBox(15, nameBox, emailBox, bioBox);
+        VBox fieldsBox = new VBox(15, nameBox, emailBox);
         fieldsBox.setAlignment(Pos.CENTER);
 
         HBox buttonBox = new HBox(15, editButton, saveButton, cancelButton, deleteButton);
         buttonBox.setAlignment(Pos.CENTER);
+        HBox backBox = new HBox(15, backButton);
+        backBox.setAlignment(Pos.CENTER);
 
-        VBox content = new VBox(30, title, avatarPane, fieldsBox, feedbackLabel, buttonBox);
+        VBox content = new VBox(30, title, avatarPane, fieldsBox, feedbackLabel, buttonBox, backBox);
         content.setAlignment(Pos.TOP_CENTER);
 
         root.getChildren().add(content);
@@ -92,11 +86,9 @@ public class UserProfile {
         editButton.setOnAction(e -> {
             nameLabel.setVisible(false);
             emailLabel.setVisible(false);
-            bioLabel.setVisible(false);
 
             nameField.setVisible(true);
             emailField.setVisible(true);
-            bioArea.setVisible(true);
 
             editButton.setVisible(false);
             saveButton.setVisible(true);
@@ -106,11 +98,9 @@ public class UserProfile {
         cancelButton.setOnAction(e -> {
             nameField.setVisible(false);
             emailField.setVisible(false);
-            bioArea.setVisible(false);
 
             nameLabel.setVisible(true);
             emailLabel.setVisible(true);
-            bioLabel.setVisible(true);
 
             editButton.setVisible(true);
             saveButton.setVisible(false);
@@ -128,7 +118,6 @@ public class UserProfile {
 
             nameLabel.setText(nameField.getText());
             emailLabel.setText(emailField.getText());
-            bioLabel.setText(bioArea.getText());
 
             initialsLabel.setText(getInitials(nameField.getText()));
 
@@ -140,15 +129,12 @@ public class UserProfile {
         });
 
         deleteButton.setOnAction(e -> {
-            nameLabel.setText("User Name");
-            emailLabel.setText("User Email");
-            bioLabel.setText("Bio do usuário");
-            initialsLabel.setText("UN");
-
             feedbackLabel.setText("Perfil excluído.");
             feedbackLabel.getStyleClass().setAll("text-danger");
             feedbackLabel.setVisible(true);
         });
+
+        backButton.setOnAction(e -> new CatalogView(stage).getView(stage));
 
         return root;
     }

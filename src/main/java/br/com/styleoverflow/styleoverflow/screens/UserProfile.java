@@ -7,7 +7,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class UserProfile {
@@ -54,11 +53,14 @@ public class UserProfile {
         Button deleteButton = new Button("Excluir");
         Button backButton = new Button("Voltar");
 
+        Button historyButton = new Button("Histórico de Pedidos");
+
         editButton.getStyleClass().add("btn-primary");
         saveButton.getStyleClass().add("btn-primary");
         cancelButton.getStyleClass().add("btn-primary");
         deleteButton.getStyleClass().add("btn-primary-danger");
         backButton.getStyleClass().add("btn-primary");
+        historyButton.getStyleClass().add("btn-primary");
 
         saveButton.setVisible(false);
         cancelButton.setVisible(false);
@@ -74,10 +76,11 @@ public class UserProfile {
 
         HBox buttonBox = new HBox(15, editButton, saveButton, cancelButton, deleteButton);
         buttonBox.setAlignment(Pos.CENTER);
-        HBox backBox = new HBox(15, backButton);
-        backBox.setAlignment(Pos.CENTER);
 
-        VBox content = new VBox(30, title, avatarPane, fieldsBox, feedbackLabel, buttonBox, backBox);
+        HBox navButtons = new HBox(15, backButton, historyButton);
+        navButtons.setAlignment(Pos.CENTER);
+
+        VBox content = new VBox(30, title, avatarPane, fieldsBox, feedbackLabel, buttonBox, navButtons);
         content.setAlignment(Pos.TOP_CENTER);
 
         root.getChildren().add(content);
@@ -86,10 +89,8 @@ public class UserProfile {
         editButton.setOnAction(e -> {
             nameLabel.setVisible(false);
             emailLabel.setVisible(false);
-
             nameField.setVisible(true);
             emailField.setVisible(true);
-
             editButton.setVisible(false);
             saveButton.setVisible(true);
             cancelButton.setVisible(true);
@@ -98,10 +99,8 @@ public class UserProfile {
         cancelButton.setOnAction(e -> {
             nameField.setVisible(false);
             emailField.setVisible(false);
-
             nameLabel.setVisible(true);
             emailLabel.setVisible(true);
-
             editButton.setVisible(true);
             saveButton.setVisible(false);
             cancelButton.setVisible(false);
@@ -118,9 +117,7 @@ public class UserProfile {
 
             nameLabel.setText(nameField.getText());
             emailLabel.setText(emailField.getText());
-
             initialsLabel.setText(getInitials(nameField.getText()));
-
             feedbackLabel.setText("Perfil atualizado com sucesso.");
             feedbackLabel.getStyleClass().setAll("text-success");
             feedbackLabel.setVisible(true);
@@ -135,6 +132,12 @@ public class UserProfile {
         });
 
         backButton.setOnAction(e -> new CatalogView(stage).getView(stage));
+
+        historyButton.setOnAction(e -> {
+            Parent historyView = new OrderHistory().getView(stage);
+            stage.getScene().setRoot(historyView);
+        });
+
 
         return root;
     }

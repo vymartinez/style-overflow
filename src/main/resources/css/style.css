@@ -86,3 +86,11 @@
     -fx-background-color: rgba(15, 17, 26, 0.7);
     -fx-background-radius: 8;
 }
+
+.scroll-container {
+    -fx-background-color: #192841;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
+    -fx-spacing: 20;
+}
+

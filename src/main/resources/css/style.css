@@ -87,6 +87,23 @@
     -fx-background-radius: 8;
 }
 
+.scroll-container {
+    -fx-background-color: #192841;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
+    -fx-spacing: 20;
+}
+
+.loading-root {
+    -fx-background-color: #f4f4f4;
+}
+
+.loading-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}
+
 .product-list {
     -fx-alignment: center;
     -fx-max-width: 600px;

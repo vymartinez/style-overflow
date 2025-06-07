@@ -1,10 +1,13 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.WebpToPngConverter;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -53,6 +56,12 @@ public class ProductRegister {
         colorField.getStyleClass().add("max-fit");
         colorField.getStyleClass().add("min-fit");
 
+        Label photoUrlLabel = new Label("Url da Foto:");
+        TextField photoUrlField = new TextField();
+        photoUrlField.setPromptText("Digite a url:");
+        photoUrlField.getStyleClass().add("max-fit");
+        photoUrlField.getStyleClass().add("min-fit");
+
         Label stockLabel = new Label("Estoque:");
         TextField stockField = new TextField();
         stockField.setPromptText("Digite a quantidade em estoque:");
@@ -69,8 +78,10 @@ public class ProductRegister {
         form.add(genderField, 1, 3);
         form.add(colorLabel, 0, 4);
         form.add(colorField, 1, 4);
-        form.add(stockLabel, 0, 5);
-        form.add(stockField, 1, 5);
+        form.add(photoUrlLabel, 0, 5);
+        form.add(photoUrlField, 1, 5);
+        form.add(stockLabel, 0, 6);
+        form.add(stockField, 1, 6);
 
         Button backBtn = new Button("Voltar");
         Button registerBtn = new Button("Salvar Produto");

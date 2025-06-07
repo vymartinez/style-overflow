@@ -1,5 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import javafx.collections.FXCollections;
@@ -9,11 +10,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class CartView {
@@ -21,33 +24,26 @@ public class CartView {
     private final TableView<Product> tabela;
     private final ObservableList<Product> produtos;
     private final Label totalLabel;
-    private Stage currentStage;
 
-    public CartView() {
+    public CartView(List<Product> produtos) {
         tabela = new TableView<>();
-        produtos = FXCollections.observableArrayList();
-        totalLabel = new Label("Total: R$ 0.00");
+        this.produtos = FXCollections.observableArrayList(produtos);
+        totalLabel = new Label(String.format("Total: R$ %.2f", produtos.stream().mapToDouble(Product::getPrice).sum()));
     }
 
 
     public Parent getView(Stage currentStage) {
         // Colunas
         TableColumn<Product, String> colNome = new TableColumn<>("Nome");
-        colNome.setCellValueFactory(p -> p.getValue().nameProperty());
+        colNome.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<Product, Integer> colQtd = new TableColumn<>("Quantidade");
-        colQtd.setCellValueFactory(p -> p.getValue().quantidadeProperty().asObject());
+        colQtd.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
         TableColumn<Product, Double> colPreco = new TableColumn<>("Preço Unit.");
-        colPreco.setCellValueFactory(p -> p.getValue().priceProperty().asObject());
+        colPreco.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        TableColumn<Product, String> colSubtotal = new TableColumn<>("Subtotal");
-        colSubtotal.setCellValueFactory(p ->
-                new javafx.beans.property.SimpleStringProperty(
-                        String.format("R$ %.2f", p.getValue().getSubtotal())
-                ));
-
-        tabela.getColumns().addAll(colNome, colQtd, colPreco, colSubtotal);
+        tabela.getColumns().addAll(colNome, colQtd, colPreco);
         tabela.setItems(produtos);
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -93,7 +89,7 @@ public class CartView {
     }
 
     private void atualizarTotal() {
-        double total = produtos.stream().mapToDouble(Product::getSubtotal).sum();
+        double total = produtos.stream().mapToDouble(Product::getPrice).sum();
         totalLabel.setText(String.format("Total: R$ %.2f", total));
     }
 

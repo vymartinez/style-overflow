@@ -86,3 +86,27 @@
     -fx-background-color: rgba(15, 17, 26, 0.7);
     -fx-background-radius: 8;
 }
+
+.product-list {
+    -fx-alignment: center;
+    -fx-max-width: 600px;
+    -fx-background-color: rgba(15, 17, 26, 0.7);
+    -fx-background-radius: 8;
+    -fx-padding: 20px;
+}
+
+.table-header {
+    -fx-font-weight: bold;
+    -fx-text-fill: #00ffcc !important;
+    -fx-font-size: 14px;
+}
+
+.product-list > HBox {
+    -fx-alignment: center;
+    -fx-pref-width: 100%;
+}
+
+.product-list Label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}

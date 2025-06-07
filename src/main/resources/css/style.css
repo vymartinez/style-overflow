@@ -94,3 +94,12 @@
     -fx-spacing: 20;
 }
 
+.loading-root {
+    -fx-background-color: #f4f4f4;
+}
+
+.loading-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}

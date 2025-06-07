@@ -5,6 +5,7 @@ module br.com.styleoverflow.styleoverflow {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires javafx.graphics;
+    requires java.desktop;
 
     opens br.com.styleoverflow.styleoverflow to javafx.fxml, javafx.base;
     opens br.com.styleoverflow.styleoverflow.classes to javafx.fxml, javafx.base;

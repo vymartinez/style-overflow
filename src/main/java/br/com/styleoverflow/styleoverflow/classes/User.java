@@ -7,16 +7,16 @@ import java.util.List;
 
 public class User {
 
-    private int id;
-    private String name;
-    private String email;
-    private String cellphone;
-    private String cpf;
-    private String cep;
-    private String address;
-    private Gender gender;
-    private Role role;
-    private List<Order> orders;
+    private final int id;
+    private final String name;
+    private final String email;
+    private final String cellphone;
+    private final String cpf;
+    private final String cep;
+    private final String address;
+    private final Gender gender;
+    private final Role role;
+    private final List<Order> orders;
 
     public User(int id, String name, String email, String cellphone, String cpf, String cep, String address, Gender gender, Role role, List<Order> orders) {
         this.id = id;

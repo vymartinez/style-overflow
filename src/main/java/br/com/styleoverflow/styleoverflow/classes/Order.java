@@ -7,12 +7,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class Order {
-    private int id;
-    private List<ProductOrder> products;
-    private User client;
-    private LocalDate date;
-    private Status status;
-    private Payment paymentType;
+    private final int id;
+    private final List<ProductOrder> products;
+    private final User client;
+    private final LocalDate date;
+    private final Status status;
+    private final Payment paymentType;
 
     public Order(int id, List<ProductOrder> products, User client, LocalDate date, Status status, Payment paymentType) {
         this.id = id;

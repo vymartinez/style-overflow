@@ -8,12 +8,12 @@ CREATE TABLE users (
                        name VARCHAR(100) NOT NULL,
                        password VARCHAR(255) NOT NULL,
                        gender ENUM('MALE', 'FEMALE') NOT NULL,
-                       address TEXT,
+                       address TEXT NOT NULL,
                        email VARCHAR(150) UNIQUE NOT NULL,
                        role ENUM('CLIENT', 'ADMIN') NOT NULL DEFAULT 'CLIENT',
                        cellphone VARCHAR(20),
-                       cpf VARCHAR(14) UNIQUE,
-                       cep VARCHAR(9)
+                       cpf VARCHAR(14) UNIQUE NOT NULL,
+                       cep VARCHAR(9) NOT NULL
 );
 
 -- Tabela: products
@@ -22,7 +22,8 @@ CREATE TABLE products (
                           name VARCHAR(100) NOT NULL,
                           size ENUM('PP', 'P', 'M', 'G', 'GG') NOT NULL,
                           gender ENUM('MALE', 'FEMALE') NOT NULL,
-                          color VARCHAR(50),
+                          photo_url VARCHAR(255) NOT NULL,
+                          color VARCHAR(50) NOT NULL,
                           stock INT NOT NULL CHECK (stock >= 0),
                           price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
                           deleted BOOLEAN NOT NULL DEFAULT false

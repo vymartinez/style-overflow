@@ -68,8 +68,10 @@ public class AdminDashboard {
         table.setPrefHeight(200);
 
         table.getItems().addAll(
-                //new Product(1, "Camisa Dev", Size.G, 89.99, Gender.MALE, "Preta", 10),
-                //new Product(2, "Hoodie Java", Size.M, 129.99, Gender.FEMALE, "Azul", 5)
+            new Product(1,"Camiseta Dev", Size.G, 59.90, Gender.MALE, "Preta",  10, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/25e66de93142a7929370acddb96e05c8.webp"),
+            new Product(2,"Cropped Java", Size.G, 69.90,Gender.FEMALE, "Preta",  8, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/44a2e2bab92721199672fad138b1cab9.webp"),
+            new Product(3,"Moletom C++", Size.G, 120.00,Gender.MALE, "Preta",  5,"https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/ae0482fc0f3b89db8f88a94f8f738d49.webp"),
+            new Product(4,"Blusa Python", Size.G, 90.00,Gender.FEMALE,  "Preta", 12, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/7c5c647f237337c2f62794f302322fa7.webp")
         );
 
         VBox topBox = new VBox(10, title, table);

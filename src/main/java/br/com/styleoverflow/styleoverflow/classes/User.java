@@ -31,9 +31,6 @@ public class User {
         this.orders = orders;
     }
 
-    public User(int id, String joazinho, String mail, String number) {
-    }
-
     public int getId() {
         return id;
     }

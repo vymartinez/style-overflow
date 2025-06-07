@@ -55,7 +55,7 @@ public class CartView {
         btnRemover.setOnAction(e -> removerSelecionado());
 
         Button btnConfirmar = new Button("Confirmar compra");
-        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(OrderConfirmation.showConfirmation(currentStage, new ArrayList<>())));
+        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(OrderConfirmation.showConfirmation(currentStage, produtos)));
 
         btnVoltar.getStyleClass().add("btn-primary");
         btnRemover.getStyleClass().add("btn-primary");

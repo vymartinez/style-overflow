@@ -1,5 +1,8 @@
 package br.com.styleoverflow.styleoverflow.services;
 
+import java.sql.Connection;
+import java.util.List;
+
 import br.com.styleoverflow.styleoverflow.ConnectionFactory;
 import br.com.styleoverflow.styleoverflow.DTO.ProductDTO;
 import br.com.styleoverflow.styleoverflow.classes.Product;
@@ -7,12 +10,9 @@ import br.com.styleoverflow.styleoverflow.dao.ProductDAO;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 
-import java.sql.Connection;
-import java.util.List;
-
 public class ProductService {
 
-    private ConnectionFactory factory;
+    private final ConnectionFactory factory;
 
     public ProductService(ConnectionFactory factory) {
         this.factory = new ConnectionFactory();

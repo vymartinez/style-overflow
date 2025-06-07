@@ -1,18 +1,18 @@
 package br.com.styleoverflow.styleoverflow.dao;
 
-import br.com.styleoverflow.styleoverflow.DTO.CreateOrderDTO;
-import br.com.styleoverflow.styleoverflow.DTO.UpdateOrderDTO;
-import br.com.styleoverflow.styleoverflow.DomainException;
-import br.com.styleoverflow.styleoverflow.enums.Status;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import br.com.styleoverflow.styleoverflow.DTO.CreateOrderDTO;
+import br.com.styleoverflow.styleoverflow.DTO.UpdateOrderDTO;
+import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.enums.Status;
+
 public class OrderDAO {
 
-    private Connection connection;
+    private final Connection connection;
 
     public OrderDAO(Connection connection) {
         this.connection = connection;

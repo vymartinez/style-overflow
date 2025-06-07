@@ -1,5 +1,7 @@
 package br.com.styleoverflow.styleoverflow.services;
 
+import java.sql.Connection;
+
 import br.com.styleoverflow.styleoverflow.ConnectionFactory;
 import br.com.styleoverflow.styleoverflow.DTO.CreateUserDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateUserDTO;
@@ -7,11 +9,9 @@ import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.dao.UserDAO;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 
-import java.sql.Connection;
-
 public class UserService {
 
-    private ConnectionFactory factory;
+    private final ConnectionFactory factory;
 
     public UserService(ConnectionFactory factory) {
         this.factory = new ConnectionFactory();

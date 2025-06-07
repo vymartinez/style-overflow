@@ -1,5 +1,9 @@
 package br.com.styleoverflow.styleoverflow.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import br.com.styleoverflow.styleoverflow.DTO.CreateUserDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateUserDTO;
 import br.com.styleoverflow.styleoverflow.DomainException;
@@ -7,13 +11,9 @@ import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 public class UserDAO {
 
-    private Connection connection;
+    private final Connection connection;
 
     public UserDAO(Connection connection) {
         this.connection = connection;

@@ -1,20 +1,20 @@
 package br.com.styleoverflow.styleoverflow.dao;
 
-import br.com.styleoverflow.styleoverflow.DTO.ProductDTO;
-import br.com.styleoverflow.styleoverflow.DomainException;
-import br.com.styleoverflow.styleoverflow.classes.Product;
-import br.com.styleoverflow.styleoverflow.enums.Gender;
-import br.com.styleoverflow.styleoverflow.enums.Size;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.styleoverflow.styleoverflow.DTO.ProductDTO;
+import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Size;
+
 public class ProductDAO {
 
-    private Connection connection;
+    private final Connection connection;
 
     public ProductDAO(Connection connection) {
         this.connection = connection;

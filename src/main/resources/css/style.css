@@ -86,3 +86,13 @@
     -fx-background-color: rgba(15, 17, 26, 0.7);
     -fx-background-radius: 8;
 }
+
+.loading-root {
+    -fx-background-color: #f4f4f4;
+}
+
+.loading-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}

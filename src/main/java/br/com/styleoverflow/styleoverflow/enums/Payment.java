@@ -11,4 +11,15 @@ public enum Payment {
     public Boolean isCard() {
         return this == CARD;
     }
+
+    public String toPortgueseString() {
+        switch (this) {
+            case PIX:
+                return "Pix";
+            case CARD:
+                return "Card";
+            default:
+                return "";
+        }
+    }
 }

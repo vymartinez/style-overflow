@@ -4,10 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import br.com.styleoverflow.styleoverflow.DTO.CreateOrderDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateOrderDTO;
@@ -87,8 +84,8 @@ public class OrderDAO {
         );
 
         Map<Integer, Order> ordersMap = new HashMap<>();
-        List<ProductOrder> productOrders = new ArrayList<>();
-        int lastOrderId = -1;
+        Map<Integer, List<ProductOrder>> productOrdersMap = new HashMap<>();
+        List<Order> orders = new ArrayList<>();
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -112,31 +109,38 @@ public class OrderDAO {
                     resultSet.getInt("quantity")
                 );
 
-                productOrders.add(productOrder);
-
                 int orderId = resultSet.getInt("order_id");
-                if (lastOrderId == -1) lastOrderId = orderId;
 
-                if (orderId != lastOrderId) {
-                    lastOrderId = orderId;
-                    Order order = new Order(
-                        orderId,
-                        productOrders,
-                        resultSet.getDate("date").toLocalDate(),
-                        Status.valueOf(resultSet.getString("status")),
-                        Payment.valueOf(resultSet.getString("payment_type"))
-                    );
-                    ordersMap.put(orderId, order);
-                    productOrders.clear();
-                } else {
-                    productOrders.add(productOrder);
-                }
+                productOrdersMap.computeIfAbsent(orderId, k -> new ArrayList<>()).add(productOrder);
+
+                Order order = new Order(
+                    orderId,
+                    new ArrayList<>(),
+                    resultSet.getDate("date").toLocalDate(),
+                    Status.valueOf(resultSet.getString("status")),
+                    Payment.valueOf(resultSet.getString("payment_type"))
+                );
+                ordersMap.putIfAbsent(orderId, order);
+            }
+
+            for (Map.Entry<Integer, Order> entry : ordersMap.entrySet()) {
+                int orderId = entry.getKey();
+                Order order = entry.getValue();
+                List<ProductOrder> productOrders = productOrdersMap.get(orderId);
+
+                orders.add(new Order(
+                    orderId,
+                    productOrders,
+                    order.getDate(),
+                    order.getStatus(),
+                    order.getPaymentType()
+                ));
             }
 
             statement.close();
             connection.close();
 
-            return new ArrayList<>(ordersMap.values());
+            return orders;
 
         } catch (Exception e) {
             throw new DomainException("Erro ao buscar pedidos do cliente.");

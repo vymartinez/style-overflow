@@ -52,29 +52,23 @@ public class OrderConfirmation {
             double subtotal = qtd * unit;
             total += subtotal;
 
-            // Criando uma linha da tabela
-            HBox tableRow = new HBox(10); // Espaçamento de 10 entre colunas
+            HBox tableRow = new HBox(10);
             tableRow.setAlignment(Pos.CENTER_LEFT);
 
-            // Coluna da quantidade e nome
             Label qtdName = new Label(qtd + "x " + p.getName());
-            qtdName.setMinWidth(200); // Largura fixa para alinhamento
+            qtdName.setMinWidth(200);
             qtdName.getStyleClass().add("label");
 
-            // Coluna do preço unitário
             Label unitPrice = new Label("R$ " + String.format("%.2f", unit));
             unitPrice.setMinWidth(100);
             unitPrice.getStyleClass().add("label");
 
-            // Coluna do subtotal
             Label subTotal = new Label("R$ " + String.format("%.2f", subtotal));
             subTotal.setMinWidth(100);
             subTotal.getStyleClass().add("label");
 
-            // Adicionando as colunas à linha
             tableRow.getChildren().addAll(qtdName, unitPrice, subTotal);
 
-            // Adicionando a linha à lista de produtos
             productList.getChildren().add(tableRow);
         }
 
@@ -102,7 +96,6 @@ public class OrderConfirmation {
         confirmarButton.setOnAction(e -> {
             Payment metodo = pagamentoBox.getValue();
             System.out.println("Pedido confirmado com pagamento via: " + metodo);
-            // salvar pedido, limpar carrinho, redirecionar, etc
         });
 
         VBox content = new VBox(20,

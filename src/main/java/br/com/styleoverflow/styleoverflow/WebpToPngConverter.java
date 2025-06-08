@@ -19,7 +19,6 @@ public class WebpToPngConverter {
 
         webpPhotos.add(webpUrl);
 
-        // Baixa a imagem da URL
         InputStream inputStream = new URL(webpUrl).openStream();
         BufferedImage image = ImageIO.read(inputStream);
 
@@ -27,14 +26,12 @@ public class WebpToPngConverter {
             throw new RuntimeException("A imagem não pôde ser lida. Formato possivelmente não suportado.");
         }
 
-        // Cria um arquivo temporário .png
         File pngFile = File.createTempFile("converted-", ".png");
         ImageIO.write(image, "png", pngFile);
 
         String pngUrl = pngFile.toURI().toURL().toString();
         pngPhotos.add(pngUrl);
 
-        // Retorna a URL local (usada em JavaFX, por exemplo)
         return pngUrl;
     }
 }

@@ -39,16 +39,13 @@ public class CatalogView {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
 
-        // Filtro de pesquisa
         genderFilter.getItems().addAll(Gender.values());
         genderFilter.setPromptText("Filtrar por gênero");
         genderFilter.setOnAction(e -> updateCatalog(stage));
 
-        // Campo de pesquisa
         searchField.setPromptText("Pesquisar produto...");
         searchField.textProperty().addListener((obs, oldVal, newVal) -> updateCatalog(stage));
 
-        // Botão ver carrinho
         Button btnCart = new Button("Ver Carrinho");
         btnCart.setOnAction(e -> new CartView(cartProducts).showCart(stage));
 
@@ -130,7 +127,7 @@ public class CatalogView {
     }
 
     private void limparFiltros(Stage stage) {
-        genderFilter.getSelectionModel().clearSelection(); // limpa seleção
+        genderFilter.getSelectionModel().clearSelection();
         genderFilter.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(Gender item, boolean empty) {

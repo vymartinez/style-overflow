@@ -71,6 +71,11 @@
             <artifactId>dotenv-java</artifactId>
             <version>3.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.sejda.imageio</groupId>
+            <artifactId>webp-imageio</artifactId>
+            <version>0.1.6</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -90,7 +95,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                br.com.styleoverflow.styleoverflow/br.com.styleoverflow.styleoverflow.HelloApplication
+                                br.com.styleoverflow.styleoverflow/br.com.styleoverflow.styleoverflow.App
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

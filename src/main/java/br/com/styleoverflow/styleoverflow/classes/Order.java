@@ -7,13 +7,13 @@ import br.com.styleoverflow.styleoverflow.enums.Payment;
 import br.com.styleoverflow.styleoverflow.enums.Status;
 
 public class Order {
-    private Integer id;
-    private List<ProductOrder> products;
-    private LocalDate date;
-    private Status status;
-    private Payment paymentType;
+    private final int id;
+    private final List<ProductOrder> products;
+    private final LocalDate date;
+    private final Status status;
+    private final Payment paymentType;
 
-    public Order(Integer id, List<ProductOrder> products, LocalDate date, Status status, Payment paymentType) {
+    public Order(int id, List<ProductOrder> products, LocalDate date, Status status, Payment paymentType) {
         this.id = id;
         this.products = products;
         this.date = date;

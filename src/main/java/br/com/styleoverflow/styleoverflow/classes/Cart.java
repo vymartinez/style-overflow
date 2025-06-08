@@ -32,5 +32,3 @@ public class Cart {
         return products.stream().mapToDouble(CartProduct::calculateSubtotal).sum();
     }
 }
-
-

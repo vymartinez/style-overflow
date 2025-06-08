@@ -4,15 +4,16 @@ import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 
 public class Product {
-    private Integer id;
-    private String name;
-    private Size size;
-    private Double price;
-    private Gender gender;
-    private String color;
-    private Integer stock;
+    private final Integer id;
+    private final String name;
+    private final Size size;
+    private final Double price;
+    private final Gender gender;
+    private final String color;
+    private final Integer stock;
+    private final String photoUrl;
 
-    public Product(Integer id, String name, Size size, Double price, Gender gender, String color, Integer stock) {
+    public Product(Integer id, String name, Size size, Double price, Gender gender, String color, Integer stock, String photoUrl) {
         this.id = id;
         this.name = name;
         this.size = size;
@@ -20,6 +21,7 @@ public class Product {
         this.gender = gender;
         this.color = color;
         this.stock = stock;
+        this.photoUrl = photoUrl;
     }
 
     public Integer getId() {
@@ -48,5 +50,9 @@ public class Product {
 
     public Integer getStock() {
         return stock;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 }

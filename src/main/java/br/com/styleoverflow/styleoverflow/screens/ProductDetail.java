@@ -15,26 +15,22 @@ public class ProductDetail {
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");
 
-        // Título com quebra de linha e largura máxima
         Label title = new Label("Detalhes do Produto");
         title.getStyleClass().add("text-primary");
         title.setWrapText(true);
         title.setMaxWidth(600);
         title.setAlignment(Pos.CENTER);
 
-        // Imagem do produto
         ImageView productImage = new ImageView(new Image(imagemUrl));
         productImage.setFitHeight(200);
         productImage.setPreserveRatio(true);
 
-        // Nome
         Label nomeLabel = new Label(nome);
         nomeLabel.getStyleClass().add("text-primary");
         nomeLabel.setWrapText(true);
         nomeLabel.setMaxWidth(600);
         nomeLabel.setAlignment(Pos.CENTER);
 
-        // Preço
         Label precoLabel = new Label("Preço: R$ " + String.format("%.2f", preco));
         precoLabel.getStyleClass().add("label");
 

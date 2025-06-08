@@ -19,14 +19,12 @@ public class UserProfile {
         Label title = new Label("Perfil do Usuário");
         title.getStyleClass().add("text-primary");
 
-        // Avatar
         Circle avatarCircle = new Circle(50, Color.web("#6c63ff"));
         Label initialsLabel = new Label("U");
         initialsLabel.setTextFill(Color.WHITE);
         initialsLabel.setFont(Font.font("Arial", 28));
         StackPane avatarPane = new StackPane(avatarCircle, initialsLabel);
 
-        // Labels e Inputs
         Label nameTitle = new Label("Nome:");
         Label nameLabel = new Label("");
 

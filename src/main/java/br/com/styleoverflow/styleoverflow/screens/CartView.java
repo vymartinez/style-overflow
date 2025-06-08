@@ -33,7 +33,7 @@ public class CartView {
 
 
     public Parent getView(Stage currentStage) {
-        // Colunas
+
         TableColumn<Product, String> colNome = new TableColumn<>("Nome");
         colNome.setCellValueFactory(new PropertyValueFactory<>("name"));
 
@@ -47,7 +47,6 @@ public class CartView {
         tabela.setItems(produtos);
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Botões
         Button btnVoltar = new Button("Voltar");
         btnVoltar.setOnAction(e ->voltar(currentStage));
 
@@ -65,7 +64,6 @@ public class CartView {
         botoes.setAlignment(Pos.CENTER);
         botoes.setPadding(new Insets(10));
 
-        // Total
         totalLabel.setFont(new Font(16));
 
         VBox root = new VBox(10, tabela, botoes, totalLabel);

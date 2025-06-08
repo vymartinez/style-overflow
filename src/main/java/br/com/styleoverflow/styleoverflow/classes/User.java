@@ -3,8 +3,6 @@ package br.com.styleoverflow.styleoverflow.classes;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
 
-import java.util.List;
-
 public class User {
 
     private final int id;
@@ -16,9 +14,8 @@ public class User {
     private final String address;
     private final Gender gender;
     private final Role role;
-    private final List<Order> orders;
 
-    public User(int id, String name, String email, String cellphone, String cpf, String cep, String address, Gender gender, Role role, List<Order> orders) {
+    public User(Integer id, String name, String email, String cellphone, String cpf, String cep, String address, Gender gender, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -28,10 +25,9 @@ public class User {
         this.address = address;
         this.gender = gender;
         this.role = role;
-        this.orders = orders;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -65,9 +61,5 @@ public class User {
 
     public Role getRole() {
         return role;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
     }
 }

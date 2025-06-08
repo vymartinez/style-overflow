@@ -1,8 +1,9 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.Product;
-import br.com.styleoverflow.styleoverflow.enums.Gender;
-import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.services.AdminService;
+import br.com.styleoverflow.styleoverflow.services.ProductService;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -12,17 +13,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
-import java.util.ArrayList;
+import java.util.List;
 
 public class AdminDashboard {
 
-//    private final ArrayList<Product> products;
-//    private final AdminService adminService;
-//
-//    public AdminDashboard(ArrayList<Product> products) {
-//        this.products = adminService.getAllProducts();
-//    }
+    private final AdminService adminService = new AdminService(new ProductService());
+    private final List<Product> products = ProductService.getAllProducts();
 
     public BorderPane getView(Stage stage) {
         Label title = new Label("Painel de Administração");
@@ -67,12 +63,7 @@ public class AdminDashboard {
         table.getColumns().addAll(idCol, nameCol, sizeCol, priceCol, colorCol, stockCol, actionCol);
         table.setPrefHeight(200);
 
-        table.getItems().addAll(
-            new Product(1,"Camiseta Dev", Size.G, 59.90, Gender.MALE, "Preta",  10, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/25e66de93142a7929370acddb96e05c8.webp"),
-            new Product(2,"Cropped Java", Size.G, 69.90,Gender.FEMALE, "Preta",  8, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/44a2e2bab92721199672fad138b1cab9.webp"),
-            new Product(3,"Moletom C++", Size.G, 120.00,Gender.MALE, "Preta",  5,"https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/ae0482fc0f3b89db8f88a94f8f738d49.webp"),
-            new Product(4,"Blusa Python", Size.G, 90.00,Gender.FEMALE,  "Preta", 12, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/7c5c647f237337c2f62794f302322fa7.webp")
-        );
+        table.getItems().addAll(products);
 
         VBox topBox = new VBox(10, title, table);
         topBox.setAlignment(Pos.CENTER);
@@ -107,7 +98,14 @@ public class AdminDashboard {
 
                 deleteBtn.setOnAction(e -> {
                     Product product = getTableView().getItems().get(getIndex());
-                    getTableView().getItems().remove(product);
+
+                    try {
+                        adminService.deleteProduct(product.getId());
+
+                        getTableView().getItems().remove(product);
+                    } catch (Exception exception) {
+                        AlertUtils.showError(exception.getMessage());
+                    }
                 });
             }
 

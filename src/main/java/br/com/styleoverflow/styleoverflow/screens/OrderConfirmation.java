@@ -46,7 +46,8 @@ public class OrderConfirmation {
         double total = 0;
 
         for (Product p : products) {
-            int qtd = p.getQuantidade();
+            //int qtd = p.getQuantidade();
+            int qtd = 1;
             double unit = p.getPrice();
             double subtotal = qtd * unit;
             total += subtotal;

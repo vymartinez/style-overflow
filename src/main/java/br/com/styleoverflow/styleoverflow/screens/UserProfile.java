@@ -131,7 +131,7 @@ public class UserProfile {
             feedbackLabel.setVisible(true);
         });
 
-        backButton.setOnAction(e -> new CatalogView(stage).getView(stage));
+        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage).getView(stage)));
 
         historyButton.setOnAction(e -> {
             Parent historyView = new OrderHistory().getView(stage);

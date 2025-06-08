@@ -1,5 +1,8 @@
 package br.com.styleoverflow.styleoverflow.classes;
 
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Size;
+
 public class Product {
     private final Integer id;
     private final String name;

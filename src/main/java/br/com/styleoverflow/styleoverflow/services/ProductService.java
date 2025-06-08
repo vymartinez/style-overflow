@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.styleoverflow.styleoverflow.ConnectionFactory;
 import br.com.styleoverflow.styleoverflow.DTO.ProductDTO;
+import br.com.styleoverflow.styleoverflow.DomainException;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.dao.ProductDAO;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
@@ -12,47 +13,62 @@ import br.com.styleoverflow.styleoverflow.enums.Size;
 
 public class ProductService {
 
-    private final ConnectionFactory factory;
+    private static final ConnectionFactory factory = new ConnectionFactory();
 
-    public ProductService(ConnectionFactory factory) {
-        this.factory = new ConnectionFactory();
-    }
-
-    public void createProduct(String name, Size size, Gender gender, String color, Integer stock, Double price) {
+    public void createProduct(String name, Size size, Gender gender, String color, Integer stock, Double price, String photoUrl) {
         Connection connection = factory.getConnection();
 
-        // implementar tratamentos de erro
+        if (name.isEmpty()) throw new DomainException("O produto deve ter um nome.");
 
-        new ProductDAO(connection).createProduct(new ProductDTO(name, size, price, gender, color, stock));
+        if (color.isEmpty()) throw new DomainException("O produto deve ter uma cor.");
 
+        if (stock < 0) throw new DomainException("O produto deve ter um quantidade maior ou igual a zero.");
+
+        if (price <= 0) throw new DomainException("O produto deve ter um valor maior que zero.");
+
+        new ProductDAO(connection).createProduct(new ProductDTO(name, size, price, gender, color, stock, photoUrl));
     }
 
-    public List<Product> getAllProducts() {
+    public static List<Product> getAllProducts() {
         Connection connection = factory.getConnection();
 
         return new ProductDAO(connection).getAllProducts();
     }
 
-    public Product getProductById(int productId) {
+    public static Product getProductById(int productId) {
         Connection connection = factory.getConnection();
 
         return new ProductDAO(connection).getProductById(productId);
     }
 
-    public void updateProduct(String name, Size size, Gender gender, String color, Integer stock, Double price, Integer productId) {
+    public void updateProduct(String name, Size size, Gender gender, String color, Integer stock, Double price, String photoUrl, Integer productId) {
         Connection connection = factory.getConnection();
 
-        // implementar tratamentos de erro
+        Product product = new ProductDAO(connection).getProductById(productId);
 
-        new ProductDAO(connection).updateProduct(new ProductDTO(name, size, price, gender, color, stock), productId);
+        if (product == null) throw new DomainException("O produto não existe.");
+
+        if (name.isEmpty()) throw new DomainException("O produto deve ter um nome.");
+
+        if (color.isEmpty()) throw new DomainException("O produto deve ter uma cor.");
+
+        if (stock < 0) throw new DomainException("O produto deve ter um quantidade maior ou igual a zero.");
+
+        if (price <= 0) throw new DomainException("O produto deve ter um valor maior que zero.");
+
+        connection = factory.getConnection();
+        new ProductDAO(connection).updateProduct(new ProductDTO(name, size, price, gender, color, stock, photoUrl), productId);
 
     }
 
     public void deleteProduct(Integer productId) {
         Connection connection = factory.getConnection();
 
-        // implementar tratamento de erro
+        Product product = new ProductDAO(connection).getProductById(productId);
 
+        if (product == null) throw new DomainException("O produto não existe.");
+
+        connection = factory.getConnection();
         new ProductDAO(connection).deleteProduct(productId);
     }
 }

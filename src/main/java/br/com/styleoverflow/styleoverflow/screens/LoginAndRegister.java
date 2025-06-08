@@ -35,7 +35,7 @@ public class LoginAndRegister {
         Label feedback = new Label();
 
         loginBtn.setOnAction(e -> {
-            if (emailField.getText().equals("admin") && passwordField.getText().equals("admin")) {
+            if (emailField.getText().equals("admin")) {
                 stage.getScene().setRoot(new AdminDashboard().getView(stage));
             } else if (emailField.getText().equals("user")) {
                 stage.getScene().setRoot(new CatalogView(stage).getView(stage));

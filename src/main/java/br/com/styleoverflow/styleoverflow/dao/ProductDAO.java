@@ -22,16 +22,17 @@ public class ProductDAO {
 
     public void createProduct(ProductDTO productDto) {
 
-        String query = "INSERT INTO products (name, size, gender, color, stock, price) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO products (name, size, gender, photo_url, color, stock, price, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, false)";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, productDto.name());
             statement.setString(2, productDto.size().toString());
             statement.setString(3, productDto.gender().toString());
-            statement.setString(4, productDto.color());
-            statement.setInt(5, productDto.stock());
-            statement.setDouble(6, productDto.price());
+            statement.setString(4, productDto.photoUrl());
+            statement.setString(5, productDto.color());
+            statement.setInt(6, productDto.stock());
+            statement.setDouble(7, productDto.price());
             statement.execute();
 
             statement.close();
@@ -59,6 +60,10 @@ public class ProductDAO {
                 Integer stock = resultSet.getInt("stock");
                 Double price = resultSet.getDouble("price");
                 String photoUrl = resultSet.getString("photo_url");
+
+                statement.close();
+                resultSet.close();
+                connection.close();
 
                 return new Product(id, name, Size.valueOf(size), price, Gender.valueOf(gender), color, stock, photoUrl);
             }
@@ -90,6 +95,11 @@ public class ProductDAO {
 
                 products.add(new Product(id, name, Size.valueOf(size), price, Gender.valueOf(gender), color, stock, photoUrl));
             }
+
+            statement.close();
+            resultSet.close();
+            connection.close();
+
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar produtos.");
         }
@@ -99,7 +109,7 @@ public class ProductDAO {
 
     public void updateProduct(ProductDTO productDto, Integer productId) {
 
-        String query = "UPDATE products SET name = ?, size = ?, gender = ?, color = ?, stock = ?, price = ? WHERE id = ?";
+        String query = "UPDATE products SET name = ?, size = ?, gender = ?, color = ?, stock = ?, price = ?, photo_url = ? WHERE id = ?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -109,7 +119,8 @@ public class ProductDAO {
             statement.setString(4, productDto.color());
             statement.setInt(5, productDto.stock());
             statement.setDouble(6, productDto.price());
-            statement.setInt(7, productId);
+            statement.setString(7, productDto.photoUrl());
+            statement.setInt(8, productId);
             statement.execute();
 
             statement.close();

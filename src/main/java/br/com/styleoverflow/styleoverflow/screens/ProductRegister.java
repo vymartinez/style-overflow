@@ -1,18 +1,26 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.WebpToPngConverter;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.services.AdminService;
+import br.com.styleoverflow.styleoverflow.services.ProductService;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+
 public class ProductRegister {
+
+    private final AdminService adminService = new AdminService(new ProductService());
+
     public VBox getView(Stage stage) {
         VBox container = new VBox(20);
         container.setAlignment(Pos.CENTER);
@@ -39,14 +47,16 @@ public class ProductRegister {
         priceField.getStyleClass().add("min-fit");
 
         Label sizeLabel = new Label("Tamanhos:");
-        TextField sizeField = new TextField();
-        sizeField.setPromptText("Digite o tamanho (P, M, G, etc.)");
+        ComboBox<Size> sizeField = new ComboBox<>();
+        sizeField.getItems().addAll(Size.values());
+        sizeField.setPromptText("Selecione o tamanho (P, M, G, etc.)");
         sizeField.getStyleClass().add("max-fit");
         sizeField.getStyleClass().add("min-fit");
 
         Label genderLabel = new Label("Gênero:");
-        TextField genderField = new TextField();
-        genderField.setPromptText("Digite o gênero (Masculino ou Feminino)");
+        ComboBox<String> genderField = new ComboBox<>();
+        genderField.getItems().addAll(Arrays.stream(Gender.values()).map(Gender::toPortugueseString).toList());
+        genderField.setPromptText("Selecione o gênero (Masculino ou Feminino)");
         genderField.getStyleClass().add("max-fit");
         genderField.getStyleClass().add("min-fit");
 
@@ -90,6 +100,24 @@ public class ProductRegister {
 
         backBtn.setOnAction(e -> {
             stage.getScene().setRoot(new AdminDashboard().getView(stage));
+        });
+
+        registerBtn.setOnAction(e -> {
+            try {
+                adminService.createProduct(
+                    nameField.getText(),
+                    sizeField.getValue(),
+                    genderField.getValue().equals("Masculino") ? Gender.MALE : Gender.FEMALE,
+                    colorField.getText(),
+                    Integer.parseInt(stockField.getText()),
+                    Double.parseDouble(priceField.getText()),
+                    photoUrlField.getText()
+                );
+
+                stage.getScene().setRoot(new AdminDashboard().getView(stage));
+            } catch (Exception exception) {
+                AlertUtils.showError(exception.getMessage());
+            }
         });
 
         container.getChildren().addAll(title, form, backBtn, registerBtn);

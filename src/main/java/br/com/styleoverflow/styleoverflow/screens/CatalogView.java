@@ -1,9 +1,11 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.WebpToPngConverter;
+import br.com.styleoverflow.styleoverflow.ConnectionFactory;
+import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.services.ProductService;
+import br.com.styleoverflow.styleoverflow.utils.WebpToPngConverter;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
-import br.com.styleoverflow.styleoverflow.enums.Size;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -12,26 +14,20 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CatalogView {
-    private final List<Product> allProducts = new ArrayList<>();
+    private final List<Product> allProducts = ProductService.getAllProducts();
     private final VBox catalogBox = new VBox(10);
-    private final ComboBox<Gender> genderFilter = new ComboBox<>();
+    private final ComboBox<String> genderFilter = new ComboBox<>();
+    private final ComboBox<Size> sizeFilter = new ComboBox<>();
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
     private final List<Product> cartProducts = new ArrayList<>();
 
     public CatalogView(Stage stage) {
-        // Produtos de exemplo
-        allProducts.add(new Product(1,"Camiseta Dev", Size.G, 59.90, Gender.MALE, "Preta",  10, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/25e66de93142a7929370acddb96e05c8.webp"));
-        allProducts.add(new Product(2,"Cropped Java", Size.G, 69.90,Gender.FEMALE, "Preta",  8, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/44a2e2bab92721199672fad138b1cab9.webp"));
-        allProducts.add(new Product(3,"Moletom C++", Size.G, 120.00,Gender.MALE, "Preta",  5,"https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/ae0482fc0f3b89db8f88a94f8f738d49.webp"));
-        allProducts.add(new Product(4,"Blusa Python", Size.G, 90.00,Gender.FEMALE,  "Preta", 12, "https://rsv-ink-images-production.s3.sa-east-1.amazonaws.com/images/product_v2/main_image/7c5c647f237337c2f62794f302322fa7.webp"));
-        clearFiltersButton.setOnAction(e -> limparFiltros(stage));
+       clearFiltersButton.setOnAction(e -> limparFiltros(stage));
         clearFiltersButton.setVisible(false);
     }
 
@@ -39,9 +35,13 @@ public class CatalogView {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
 
-        genderFilter.getItems().addAll(Gender.values());
+        genderFilter.getItems().addAll(Arrays.stream(Gender.values()).map(Enum::toString).toList());
         genderFilter.setPromptText("Filtrar por gênero");
         genderFilter.setOnAction(e -> updateCatalog(stage));
+
+        sizeFilter.getItems().addAll(Size.values());
+        sizeFilter.setPromptText("Filtrar por tamanho");
+        sizeFilter.setOnAction(e -> updateCatalog(stage));
 
         searchField.setPromptText("Pesquisar produto...");
         searchField.textProperty().addListener((obs, oldVal, newVal) -> updateCatalog(stage));
@@ -59,7 +59,7 @@ public class CatalogView {
         btnProfile.getStyleClass().add("btn-primary");
         logout.getStyleClass().add("btn-primary");
 
-        HBox topBar = new HBox(10, genderFilter, searchField, clearFiltersButton, btnCart, new Separator(), btnProfile,new Text("                                             "), logout);
+        HBox topBar = new HBox(10, genderFilter, sizeFilter, searchField, clearFiltersButton, btnCart, new Separator(), btnProfile,new Text("                                             "), logout);
         topBar.setAlignment(Pos.CENTER_LEFT);
 
 
@@ -80,12 +80,13 @@ public class CatalogView {
     private void updateCatalog(Stage stage) {
         catalogBox.getChildren().clear();
 
-        boolean filtroAtivo = genderFilter.getValue() != null || !searchField.getText().isEmpty();
+        boolean filtroAtivo = genderFilter.getValue() != null || !searchField.getText().isEmpty() || sizeFilter.getValue() != null;
         clearFiltersButton.setVisible(filtroAtivo);
 
         List<Product> filtered = allProducts.stream()
                 .filter(p -> {
-                    if (genderFilter.getValue() != null && p.getGender() != genderFilter.getValue()) return false;
+                    if (genderFilter.getValue() != null && genderFilter.getValue() != p.getGender().toString()) return false;
+                    if (sizeFilter.getValue() != null && sizeFilter.getValue() != p.getSize()) return false;
                     return p.getName().toLowerCase().contains(searchField.getText().toLowerCase());
                 })
                 .collect(Collectors.toList());
@@ -106,7 +107,7 @@ public class CatalogView {
             image.setFitWidth(100);
             image.setFitHeight(100);
             VBox info = new VBox(5);
-            Label nome = new Label(product.getName());
+            Label nome = new Label(product.getName() + " (" + product.getSize() + ")");
             Label preco = new Label("R$ " + String.format("%.2f", product.getPrice()));
             Label estoque = new Label("Estoque: " + product.getStock());
             Button btnAddCart = new Button("Adicionar ao Carrinho");
@@ -116,7 +117,7 @@ public class CatalogView {
             seeDetails.getStyleClass().add("btn-primary");
 
             btnAddCart.setOnAction(e -> cartProducts.add(product));
-            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product.getName(), product.getPrice(), photoUrl)));
+            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product)));
             HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
             info.getChildren().addAll(nome, preco, estoque, buttonBox);
 
@@ -128,8 +129,7 @@ public class CatalogView {
 
     private void limparFiltros(Stage stage) {
         genderFilter.getSelectionModel().clearSelection();
-        genderFilter.setButtonCell(new ListCell<>() {
-            @Override
+        genderFilter.setButtonCell(new ListCell() {
             protected void updateItem(Gender item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "Filtrar por gênero" : item.toString());

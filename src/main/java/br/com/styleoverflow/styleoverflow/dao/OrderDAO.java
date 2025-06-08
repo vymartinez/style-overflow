@@ -138,6 +138,7 @@ public class OrderDAO {
             }
 
             statement.close();
+            resultSet.close();
             connection.close();
 
             return orders;

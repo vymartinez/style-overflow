@@ -11,4 +11,15 @@ public enum Status {
     public Boolean isDelivered() {
         return this == DELIVERED;
     }
+
+    public String toPortgueseString() {
+        switch (this) {
+            case PENDING:
+                return "Pendente";
+            case DELIVERED:
+                return "Entregue";
+            default:
+                return "";
+        }
+    }
 }

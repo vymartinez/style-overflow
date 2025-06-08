@@ -11,4 +11,15 @@ public enum Gender {
     public Boolean isFemale() {
         return this == FEMALE;
     }
+
+    public String toPortugueseString() {
+        switch (this) {
+            case MALE:
+                return "Masculino";
+            case FEMALE:
+                return "Feminino";
+            default:
+                return "";
+        }
+    }
 }

@@ -1,0 +1,129 @@
+/* style.css */
+.root {
+    -fx-background-color: #0f111a;
+    -fx-font-family: "Fira Code", "Consolas", monospace;
+    -fx-padding: 5em 2em;
+    -fx-spacing: 15;
+    -fx-background-image: url("git.png");
+    -fx-background-size: 200 200;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right bottom;
+}
+
+.max-fit {
+    -fx-max-width: 400px;
+    -fx-fill-width: 100%;
+}
+
+.text-primary {
+    -fx-text-fill: #00ffcc !important;
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+
+.textfield, .passwordfield, .combobox {
+    -fx-min-width: 240px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 4;
+    -fx-padding: 6 12;
+}
+
+.text-danger {
+    -fx-text-fill: #FF0000;
+}
+
+.button {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+}
+
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #00ffcc, #3f5efb);
+    -fx-text-fill: white;
+    -fx-pref-width: 160px;
+    -fx-cursor: pointer;
+    -fx-scale-shape: 0.25;
+}
+
+.btn-primary-danger {
+    -fx-background-color: #FF0000;
+    -fx-text-fill: white;
+    -fx-pref-width: 160px;
+    -fx-cursor: pointer;
+}
+
+.hyperlink {
+    -fx-text-fill: #00ffcc;
+    -fx-font-size: 12px;
+    -fx-underline: true;
+}
+
+.min-fit {
+    -fx-min-width: 400px;
+}
+
+.text-fit {
+    -fx-pref-width: 50px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2c3e50;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.product-card {
+    -fx-background-color: rgba(15, 17, 26, 0.7);
+    -fx-background-radius: 8;
+}
+
+.scroll-container {
+    -fx-background-color: #192841;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
+    -fx-spacing: 20;
+}
+
+.loading-root {
+    -fx-background-color: #f4f4f4;
+}
+
+.loading-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}
+
+.product-list {
+    -fx-alignment: center;
+    -fx-max-width: 600px;
+    -fx-background-color: rgba(15, 17, 26, 0.7);
+    -fx-background-radius: 8;
+    -fx-padding: 20px;
+}
+
+.table-header {
+    -fx-font-weight: bold;
+    -fx-text-fill: #00ffcc !important;
+    -fx-font-size: 14px;
+}
+
+.product-list > HBox {
+    -fx-alignment: center;
+    -fx-pref-width: 100%;
+}
+
+.product-list Label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}

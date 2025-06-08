@@ -15,7 +15,10 @@ import br.com.styleoverflow.styleoverflow.DomainException;
 import br.com.styleoverflow.styleoverflow.classes.Order;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.classes.ProductOrder;
-import br.com.styleoverflow.styleoverflow.enums.*;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Payment;
+import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.enums.Status;
 
 public class OrderDAO {
 
@@ -97,7 +100,7 @@ public class OrderDAO {
                     resultSet.getInt("product_id"),
                     resultSet.getString("name"),
                     Size.valueOf(resultSet.getString("size")),
-                    resultSet.getBigDecimal("price"),
+                    resultSet.getDouble("price"),
                     Gender.valueOf(resultSet.getString("gender")),
                     resultSet.getString("color"),
                     resultSet.getInt("stock"),

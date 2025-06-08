@@ -58,8 +58,9 @@ public class ProductDAO {
                 String color = resultSet.getString("color");
                 Integer stock = resultSet.getInt("stock");
                 Double price = resultSet.getDouble("price");
+                String photoUrl = resultSet.getString("photo_url");
 
-                return new Product(id, name, Size.valueOf(size), price, Gender.valueOf(gender), color, stock);
+                return new Product(id, name, Size.valueOf(size), price, Gender.valueOf(gender), color, stock, photoUrl);
             }
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar produto.");
@@ -85,8 +86,9 @@ public class ProductDAO {
                 String color = resultSet.getString("color");
                 Integer stock = resultSet.getInt("stock");
                 Double price = resultSet.getDouble("price");
+                String photoUrl = resultSet.getString("photo_url");
 
-                products.add(new Product(id, name, Size.valueOf(size), price, Gender.valueOf(gender), color, stock));
+                products.add(new Product(id, name, Size.valueOf(size), price, Gender.valueOf(gender), color, stock, photoUrl));
             }
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar produtos.");

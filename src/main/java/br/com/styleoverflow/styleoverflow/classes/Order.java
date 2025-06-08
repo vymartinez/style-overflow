@@ -1,24 +1,21 @@
 package br.com.styleoverflow.styleoverflow.classes;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import br.com.styleoverflow.styleoverflow.enums.Payment;
 import br.com.styleoverflow.styleoverflow.enums.Status;
-
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 
 public class Order {
     private Integer id;
     private List<ProductOrder> products;
-    private User client;
     private LocalDate date;
     private Status status;
     private Payment paymentType;
 
-    public Order(Integer id, List<ProductOrder> products, User client, LocalDate date, Status status, Payment paymentType) {
+    public Order(Integer id, List<ProductOrder> products, LocalDate date, Status status, Payment paymentType) {
         this.id = id;
         this.products = products;
-        this.client = client;
         this.date = date;
         this.status = status;
         this.paymentType = paymentType;
@@ -30,10 +27,6 @@ public class Order {
 
     public List<ProductOrder> getProducts() {
         return products;
-    }
-
-    public User getClient() {
-        return client;
     }
 
     public LocalDate getDate() {

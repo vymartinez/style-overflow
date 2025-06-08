@@ -33,6 +33,12 @@ public class OrderService {
         new OrderDAO(connection).createOrder(new CreateOrderDTO(userId, paymentType, productOrderDTOList));
     }
 
+    public void getOrdersByCustomerId(Integer userId) {
+        Connection connection = factory.getConnection();
+
+        new OrderDAO(connection).getOrdersByCustomerId(userId);
+    }
+
     public void updateOrder(Status status, Integer orderId) {
         Connection connection = factory.getConnection();
 

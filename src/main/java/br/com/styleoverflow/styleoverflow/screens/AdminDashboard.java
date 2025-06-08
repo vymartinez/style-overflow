@@ -4,6 +4,7 @@ import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.services.AdminService;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
+import br.com.styleoverflow.styleoverflow.utils.ConfirmationModal;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -100,9 +101,14 @@ public class AdminDashboard {
                     Product product = getTableView().getItems().get(getIndex());
 
                     try {
-                        adminService.deleteProduct(product.getId());
+                        boolean confirmation =
+                                ConfirmationModal.confirmDelete("Tem certeza que deseja excluir o produto '" + product.getName() + "'?");
 
-                        getTableView().getItems().remove(product);
+                        if (confirmation) {
+                            adminService.deleteProduct(product.getId());
+                            getTableView().getItems().remove(product);
+                        }
+
                     } catch (Exception exception) {
                         AlertUtils.showError(exception.getMessage());
                     }

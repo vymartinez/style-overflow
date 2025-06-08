@@ -9,5 +9,6 @@ public record ProductDTO(
         Double price,
         Gender gender,
         String color,
-        Integer stock
+        Integer stock,
+        String photoUrl
 ) {}

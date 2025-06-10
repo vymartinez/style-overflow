@@ -35,7 +35,7 @@ public class CatalogView {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
 
-        genderFilter.getItems().addAll(Arrays.stream(Gender.values()).map(Enum::toString).toList());
+        genderFilter.getItems().addAll(Arrays.stream(Gender.values()).map(Gender::toPortugueseString).toList());
         genderFilter.setPromptText("Filtrar por gênero");
         genderFilter.setOnAction(e -> updateCatalog(stage));
 
@@ -85,7 +85,7 @@ public class CatalogView {
 
         List<Product> filtered = allProducts.stream()
                 .filter(p -> {
-                    if (genderFilter.getValue() != null && genderFilter.getValue() != p.getGender().toString()) return false;
+                    if (genderFilter.getValue() != null && genderFilter.getValue() != p.getGender().toPortugueseString()) return false;
                     if (sizeFilter.getValue() != null && sizeFilter.getValue() != p.getSize()) return false;
                     return p.getName().toLowerCase().contains(searchField.getText().toLowerCase());
                 })

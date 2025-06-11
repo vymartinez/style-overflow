@@ -72,6 +72,34 @@ public class UserDAO {
         return null;
     }
 
+    public User getUserByEmail(String userEmail) {
+
+        String query = "SELECT * FROM users WHERE email = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, userEmail);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Integer id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String gender = resultSet.getString("gender");
+                String address = resultSet.getString("address");
+                String email = resultSet.getString("email");
+                String role = resultSet.getString("role");
+                String cellphone = resultSet.getString("cellphone");
+                String cep = resultSet.getString("cep");
+                String cpf = resultSet.getString("cpf");
+
+                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role));
+            }
+        } catch (Exception e) {
+            throw new DomainException("erro interno ao buscar usuário.");
+        }
+
+        return null;
+    }
+
 
     public void updateUser(UpdateUserDTO userDto, Integer userId) {
         String query = "UPDATE users SET email = ?, password = ?, cellphone = ?, cep = ?, address = ? WHERE id = ?";

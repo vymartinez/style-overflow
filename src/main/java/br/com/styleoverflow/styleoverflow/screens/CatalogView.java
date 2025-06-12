@@ -132,7 +132,14 @@ public class CatalogView {
         genderFilter.setButtonCell(new ListCell() {
             protected void updateItem(Gender item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty || item == null ? "Filtrar por gênero" : item.toString());
+                setText("Filtrar por gênero");
+            }
+        });
+        sizeFilter.getSelectionModel().clearSelection();
+        sizeFilter.setButtonCell(new ListCell() {
+            protected void updateItem(Size item, boolean empty) {
+                super.updateItem(item, empty);
+                setText("Filtrar por tamanho");
             }
         });
         searchField.clear();

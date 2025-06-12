@@ -1,6 +1,8 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.services.AdminService;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
@@ -14,30 +16,51 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AdminDashboard {
 
     private final AdminService adminService = new AdminService(new ProductService());
-    private final List<Product> products = ProductService.getAllProducts();
+    private final List<Product> allProducts = ProductService.getAllProducts();
+    private final ComboBox<String> genderFilter = new ComboBox<>();
+    private final ComboBox<Size> sizeFilter = new ComboBox<>();
+    private final TextField searchField = new TextField();
+    private final Button clearFiltersButton = new Button("Limpar Filtros");
+    private final TableView<Product> table = new TableView<>();
 
     public BorderPane getView(Stage stage) {
         Label title = new Label("Painel de Administração");
         title.getStyleClass().add("text-primary");
 
+        clearFiltersButton.setOnAction(e -> cleanFilters(stage));
+        clearFiltersButton.setVisible(false);
+
+        genderFilter.getItems().addAll(Arrays.stream(Gender.values()).map(Gender::toPortugueseString).toList());
+        genderFilter.setPromptText("Filtrar por gênero");
+        genderFilter.setOnAction(e -> updateCatalog());
+
+        sizeFilter.getItems().addAll(Size.values());
+        sizeFilter.setPromptText("Filtrar por tamanho");
+        sizeFilter.setOnAction(e -> updateCatalog());
+
+        searchField.setPromptText("Pesquisar produto...");
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> updateCatalog());
+
+        HBox filterBox = new HBox(10, searchField, genderFilter, sizeFilter, clearFiltersButton);
+        filterBox.setAlignment(Pos.CENTER);
+        filterBox.setPadding(new Insets(10));
+
         Button registerButton = new Button("Cadastrar Produto");
-        registerButton.setOnAction(e -> {
-            stage.getScene().setRoot(new ProductRegister().getView(stage));
-        });
+        registerButton.setOnAction(e -> stage.getScene().setRoot(new ProductRegister().getView(stage)));
         registerButton.getStyleClass().add("btn-primary");
 
         Button logoutButton = new Button("Logout");
         logoutButton.getStyleClass().add("btn-primary");
-        logoutButton.setOnAction(e -> {
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
-        });
+        logoutButton.setOnAction(e -> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
 
-        TableView<Product> table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<Product, Integer> idCol = new TableColumn<>("ID");
@@ -55,28 +78,37 @@ public class AdminDashboard {
         TableColumn<Product, String> colorCol = new TableColumn<>("Cor");
         colorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
 
+        TableColumn<Product, Gender> genderCol = new TableColumn<>("Gênero");
+        genderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        genderCol.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Gender item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.toPortugueseString());
+            }
+        });
+
         TableColumn<Product, Integer> stockCol = new TableColumn<>("Em estoque");
         stockCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
 
         TableColumn<Product, Void> actionCol = new TableColumn<>("Ações");
         actionCol.setCellFactory(getActionCellFactory(stage));
 
-        table.getColumns().addAll(idCol, nameCol, sizeCol, priceCol, colorCol, stockCol, actionCol);
-        table.setPrefHeight(200);
+        table.getColumns().addAll(idCol, nameCol, sizeCol, priceCol, colorCol, genderCol, stockCol, actionCol);
+        table.setPrefHeight(400);
+        updateCatalog();
 
-        table.getItems().addAll(products);
-
-        VBox topBox = new VBox(10, title, table);
+        VBox topBox = new VBox(10, title, filterBox, table);
         topBox.setAlignment(Pos.CENTER);
         topBox.setPadding(new Insets(10));
 
-        VBox bottomBox = new VBox(10, registerButton, logoutButton);
-        bottomBox.setAlignment(Pos.BOTTOM_CENTER);
-        bottomBox.setPadding(new Insets(10));
+        HBox buttonBox = new HBox(10, registerButton, logoutButton);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setPadding(new Insets(10));
 
         BorderPane layout = new BorderPane();
-        layout.setCenter(topBox);
-        layout.setBottom(bottomBox);
+        layout.setTop(topBox);
+        layout.setBottom(buttonBox);
         layout.setPadding(new Insets(20));
 
         return layout;
@@ -101,8 +133,7 @@ public class AdminDashboard {
                     Product product = getTableView().getItems().get(getIndex());
 
                     try {
-                        boolean confirmation =
-                                ConfirmationModal.confirmDelete("Tem certeza que deseja excluir o produto '" + product.getName() + "'?");
+                        boolean confirmation = ConfirmationModal.confirmDelete(product.getName());
 
                         if (confirmation) {
                             adminService.deleteProduct(product.getId());
@@ -121,5 +152,40 @@ public class AdminDashboard {
                 setGraphic(empty ? null : pane);
             }
         };
+    }
+
+    private void updateCatalog() {
+        boolean hasFilter = genderFilter.getValue() != null || !searchField.getText().isEmpty() || sizeFilter.getValue() != null;
+        clearFiltersButton.setVisible(hasFilter);
+
+        List<Product> filtered = allProducts.stream()
+                .filter(p -> {
+                    if (genderFilter.getValue() != null && !genderFilter.getValue().equals(p.getGender().toPortugueseString()))
+                        return false;
+                    if (sizeFilter.getValue() != null && sizeFilter.getValue() != p.getSize()) return false;
+                    return p.getName().toLowerCase().contains(searchField.getText().toLowerCase());
+                })
+                .collect(Collectors.toList());
+
+        table.getItems().setAll(filtered);
+    }
+
+    private void cleanFilters(Stage stage) {
+        genderFilter.getSelectionModel().clearSelection();
+        genderFilter.setButtonCell(new ListCell() {
+            protected void updateItem(Gender item, boolean empty) {
+                super.updateItem(item, empty);
+                setText("Filtrar por gênero");
+            }
+        });
+        sizeFilter.getSelectionModel().clearSelection();
+        sizeFilter.setButtonCell(new ListCell() {
+            protected void updateItem(Size item, boolean empty) {
+                super.updateItem(item, empty);
+                setText("Filtrar por tamanho");
+            }
+        });
+        searchField.clear();
+        updateCatalog();
     }
 }

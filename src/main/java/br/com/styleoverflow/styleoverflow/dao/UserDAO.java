@@ -3,6 +3,7 @@ package br.com.styleoverflow.styleoverflow.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import br.com.styleoverflow.styleoverflow.DTO.CreateUserDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateUserDTO;
@@ -63,7 +64,7 @@ public class UserDAO {
                 String cep = resultSet.getString("cep");
                 String cpf = resultSet.getString("cpf");
 
-                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role));
+                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
             }
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar usuário.");
@@ -91,7 +92,7 @@ public class UserDAO {
                 String cep = resultSet.getString("cep");
                 String cpf = resultSet.getString("cpf");
 
-                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role));
+                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
             }
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar usuário.");

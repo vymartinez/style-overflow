@@ -9,6 +9,7 @@ import br.com.styleoverflow.styleoverflow.DTO.CreateOrderDTO;
 import br.com.styleoverflow.styleoverflow.DTO.ProductOrderDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateOrderDTO;
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
+import br.com.styleoverflow.styleoverflow.classes.Order;
 import br.com.styleoverflow.styleoverflow.dao.OrderDAO;
 import br.com.styleoverflow.styleoverflow.enums.Payment;
 import br.com.styleoverflow.styleoverflow.enums.Status;
@@ -33,10 +34,10 @@ public class OrderService {
         new OrderDAO(connection).createOrder(new CreateOrderDTO(userId, paymentType, productOrderDTOList));
     }
 
-    public void getOrdersByCustomerId(Integer userId) {
+    public List<Order> getOrdersByCustomerId(Integer userId) {
         Connection connection = factory.getConnection();
 
-        new OrderDAO(connection).getOrdersByCustomerId(userId);
+        return new OrderDAO(connection).getOrdersByCustomerId(userId);
     }
 
     public void updateOrder(Status status, Integer orderId) {

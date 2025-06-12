@@ -18,15 +18,9 @@ public class ProductService {
     public void createProduct(String name, Size size, Gender gender, String color, Integer stock, Double price, String photoUrl) {
         Connection connection = factory.getConnection();
 
-        if (name.isEmpty()) throw new DomainException("O produto deve ter um nome.");
+        ProductDTO productDTO = validateProductData(new ProductDTO(name, size, price, gender, color, stock, photoUrl));
 
-        if (color.isEmpty()) throw new DomainException("O produto deve ter uma cor.");
-
-        if (stock < 0) throw new DomainException("O produto deve ter um quantidade maior ou igual a zero.");
-
-        if (price <= 0) throw new DomainException("O produto deve ter um valor maior que zero.");
-
-        new ProductDAO(connection).createProduct(new ProductDTO(name, size, price, gender, color, stock, photoUrl));
+        new ProductDAO(connection).createProduct(productDTO);
     }
 
     public static List<Product> getAllProducts() {
@@ -45,19 +39,12 @@ public class ProductService {
         Connection connection = factory.getConnection();
 
         Product product = new ProductDAO(connection).getProductById(productId);
-
         if (product == null) throw new DomainException("O produto não existe.");
 
-        if (name.isEmpty()) throw new DomainException("O produto deve ter um nome.");
-
-        if (color.isEmpty()) throw new DomainException("O produto deve ter uma cor.");
-
-        if (stock < 0) throw new DomainException("O produto deve ter um quantidade maior ou igual a zero.");
-
-        if (price <= 0) throw new DomainException("O produto deve ter um valor maior que zero.");
+        ProductDTO productDto = validateProductData(new ProductDTO(name, size, price, gender, color, stock, photoUrl));
 
         connection = factory.getConnection();
-        new ProductDAO(connection).updateProduct(new ProductDTO(name, size, price, gender, color, stock, photoUrl), productId);
+        new ProductDAO(connection).updateProduct(productDto, productId);
 
     }
 
@@ -70,5 +57,17 @@ public class ProductService {
 
         connection = factory.getConnection();
         new ProductDAO(connection).deleteProduct(productId);
+    }
+
+    private ProductDTO validateProductData(ProductDTO productDto) {
+        if (productDto.name().isEmpty()) throw new DomainException("O produto deve ter um nome.");
+
+        if (productDto.color().isEmpty()) throw new DomainException("O produto deve ter uma cor.");
+
+        if (productDto.stock() < 0) throw new DomainException("O produto deve ter um quantidade maior ou igual a zero.");
+
+        if (productDto.price() <= 0) throw new DomainException("O produto deve ter um valor maior que zero.");
+
+        return productDto;
     }
 }

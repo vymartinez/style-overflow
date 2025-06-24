@@ -9,10 +9,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import java.util.List;
 
 public class ProductDetail {
 
-    public static Parent showProduct(Stage stage, Product product) {
+    public static Parent showProduct(Stage stage, Product product, List<Product> cartProducts) {
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");
@@ -56,9 +57,11 @@ public class ProductDetail {
             root.getChildren().add(content);
 
             voltarButton.setOnAction(e -> {
-                stage.getScene().setRoot(new CatalogView(stage).getView(stage));
+                stage.getScene().setRoot(new CatalogView(stage, cartProducts).getView(stage));
             });
-        }catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return root;
     }
 }

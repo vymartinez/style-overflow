@@ -24,10 +24,11 @@ public class CatalogView {
     private final ComboBox<Size> sizeFilter = new ComboBox<>();
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
-    private final List<Product> cartProducts = new ArrayList<>();
+    private final List<Product> cartProducts;
 
-    public CatalogView(Stage stage) {
-       clearFiltersButton.setOnAction(e -> limparFiltros(stage));
+    public CatalogView(Stage stage, List<Product> cartProducts) {
+        this.cartProducts = cartProducts;
+        clearFiltersButton.setOnAction(e -> limparFiltros(stage));
         clearFiltersButton.setVisible(false);
     }
 
@@ -50,8 +51,7 @@ public class CatalogView {
         btnCart.setOnAction(e -> new CartView(cartProducts).showCart(stage));
 
         Button btnProfile = new Button("Perfil");
-        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage)));
-
+        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts)));
         Button logout = new Button("Logout");
         logout.setOnAction(e-> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
 
@@ -117,8 +117,7 @@ public class CatalogView {
             seeDetails.getStyleClass().add("btn-primary");
 
             btnAddCart.setOnAction(e -> cartProducts.add(product));
-            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product)));
-            HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
+            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, cartProducts)));            HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
             info.getChildren().addAll(nome, preco, estoque, buttonBox);
 
             box.getChildren().addAll(image, info);

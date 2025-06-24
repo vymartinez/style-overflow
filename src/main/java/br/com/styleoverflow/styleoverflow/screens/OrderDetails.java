@@ -47,7 +47,7 @@ public class OrderDetails {
 
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-primary");
-        backButton.setOnAction(e -> stage.getScene().setRoot(OrderHistory.getView(stage)));
+        //backButton.setOnAction(e -> stage.getScene().setRoot(OrderHistory.getView(stage)));
 
         root.getChildren().addAll(title, imageView, infoBox, backButton);
         return root;

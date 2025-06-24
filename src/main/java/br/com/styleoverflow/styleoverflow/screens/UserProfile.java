@@ -1,5 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.Product;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -8,10 +9,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserProfile {
 
-    public static Parent showProfile(Stage stage) {
+    public static Parent showProfile(Stage stage, List<Product> cartProducts) {
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");
@@ -129,13 +132,14 @@ public class UserProfile {
             feedbackLabel.setVisible(true);
         });
 
-        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage).getView(stage)));
-
-        historyButton.setOnAction(e -> {
-            Parent historyView = new OrderHistory().getView(stage);
-            stage.getScene().setRoot(historyView);
+        backButton.setOnAction(e -> {
+            stage.getScene().setRoot(new CatalogView(stage, cartProducts).getView(stage));
         });
 
+        historyButton.setOnAction(e -> {
+            Parent historyView = new OrderHistory(cartProducts).getView(stage);
+            stage.getScene().setRoot(historyView);
+        });
 
         return root;
     }

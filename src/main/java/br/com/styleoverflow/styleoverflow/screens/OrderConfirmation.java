@@ -32,7 +32,7 @@ public class OrderConfirmation {
         headerName.setMinWidth(200);
         headerName.getStyleClass().add("table-header");
 
-        Label headerUnit = new Label("Preço Unitário");
+        Label headerUnit = new Label("Tamanho");
         headerUnit.setMinWidth(100);
         headerUnit.getStyleClass().add("table-header");
 
@@ -46,29 +46,26 @@ public class OrderConfirmation {
         double total = 0;
 
         for (Product p : products) {
-            //int qtd = p.getQuantidade();
-            int qtd = 1;
-            double unit = p.getPrice();
-            double subtotal = qtd * unit;
+            // Calcular subtotal para cada produto (preço unitário)
+            double subtotal = p.getPrice();
             total += subtotal;
 
             HBox tableRow = new HBox(10);
             tableRow.setAlignment(Pos.CENTER_LEFT);
 
-            Label qtdName = new Label(qtd + "x " + p.getName());
-            qtdName.setMinWidth(200);
-            qtdName.getStyleClass().add("label");
+            Label nameLabel = new Label(p.getName());
+            nameLabel.setMinWidth(200);
+            nameLabel.getStyleClass().add("label");
 
-            Label unitPrice = new Label("R$ " + String.format("%.2f", unit));
+            Label sizeLabel = new Label(p.getSize().toString());
+            sizeLabel.setMinWidth(80);
+            sizeLabel.getStyleClass().add("label");
+
+            Label unitPrice = new Label("R$ " + String.format("%.2f", subtotal));
             unitPrice.setMinWidth(100);
             unitPrice.getStyleClass().add("label");
 
-            Label subTotal = new Label("R$ " + String.format("%.2f", subtotal));
-            subTotal.setMinWidth(100);
-            subTotal.getStyleClass().add("label");
-
-            tableRow.getChildren().addAll(qtdName, unitPrice, subTotal);
-
+            tableRow.getChildren().addAll(nameLabel, sizeLabel, unitPrice);
             productList.getChildren().add(tableRow);
         }
 
@@ -90,12 +87,13 @@ public class OrderConfirmation {
         voltarButton.getStyleClass().add("btn-primary");
 
         voltarButton.setOnAction(e -> {
-            stage.getScene().setRoot(new CatalogView(stage).getView(stage));
+            stage.getScene().setRoot(new CatalogView(stage, products).getView(stage));
         });
 
         confirmarButton.setOnAction(e -> {
             Payment metodo = pagamentoBox.getValue();
             System.out.println("Pedido confirmado com pagamento via: " + metodo);
+            // Aqui você pode adicionar a lógica para finalizar o pedido
         });
 
         VBox content = new VBox(20,

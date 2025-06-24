@@ -9,6 +9,7 @@ module br.com.styleoverflow.styleoverflow {
     requires io.github.cdimascio.dotenv.java;
     requires com.zaxxer.hikari;
     requires java.desktop;
+    requires jbcrypt;
 
     opens br.com.styleoverflow.styleoverflow to javafx.fxml, javafx.base;
     opens br.com.styleoverflow.styleoverflow.classes to javafx.fxml, javafx.base;

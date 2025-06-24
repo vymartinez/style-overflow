@@ -1,5 +1,7 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -12,7 +14,14 @@ import javafx.stage.Stage;
 
 public class OrderDetails {
 
-    public static Parent getView(Stage stage, OrderHistory.Order order) {
+    public static Parent getView(Stage stage, OrderHistory.Order order, User user) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver os detalhes do pedido.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(20);
         root.setAlignment(Pos.TOP_CENTER);
         root.setPadding(new Insets(40));
@@ -47,7 +56,7 @@ public class OrderDetails {
 
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-primary");
-        backButton.setOnAction(e -> stage.getScene().setRoot(OrderHistory.getView(stage)));
+        backButton.setOnAction(e -> stage.getScene().setRoot(OrderHistory.getView(stage, user)));
 
         root.getChildren().addAll(title, imageView, infoBox, backButton);
         return root;

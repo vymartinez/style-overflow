@@ -1,5 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.services.AdminService;
@@ -20,8 +21,12 @@ import java.util.Arrays;
 public class ProductRegister {
 
     private final AdminService adminService = new AdminService(new ProductService());
+    private User user;
+
+    public ProductRegister(User user) {this.user = user;}
 
     public VBox getView(Stage stage) {
+
         VBox container = new VBox(20);
         container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(20));
@@ -99,7 +104,7 @@ public class ProductRegister {
         backBtn.getStyleClass().add("btn-primary");
 
         backBtn.setOnAction(e -> {
-            stage.getScene().setRoot(new AdminDashboard().getView(stage));
+            stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
         });
 
         registerBtn.setOnAction(e -> {
@@ -114,7 +119,7 @@ public class ProductRegister {
                     photoUrlField.getText()
                 );
 
-                stage.getScene().setRoot(new AdminDashboard().getView(stage));
+                stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
             } catch (Exception exception) {
                 AlertUtils.showError(exception.getMessage());
             }

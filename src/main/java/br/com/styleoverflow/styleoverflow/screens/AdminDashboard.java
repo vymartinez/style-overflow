@@ -1,6 +1,7 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.enums.Role;
@@ -31,10 +32,13 @@ public class AdminDashboard {
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
     private final TableView<Product> table = new TableView<>();
+    private User user;
+
+    public AdminDashboard(User user) {this.user = user;}
 
     public BorderPane getView(Stage stage) {
 
-        if (adminService.getLoggedInUser() == null || !adminService.getLoggedInUser().getRole().equals(Role.ADMIN)) {
+        if (user == null || !user.getRole().equals(Role.ADMIN)) {
             AlertUtils.showError("Acesso negado. Você não tem permissão para acessar o painel de administração.");
             return new BorderPane();
         }
@@ -61,7 +65,7 @@ public class AdminDashboard {
         filterBox.setPadding(new Insets(10));
 
         Button registerButton = new Button("Cadastrar Produto");
-        registerButton.setOnAction(e -> stage.getScene().setRoot(new ProductRegister().getView(stage)));
+        registerButton.setOnAction(e -> stage.getScene().setRoot(new ProductRegister(user).getView(stage)));
         registerButton.getStyleClass().add("btn-primary");
 
         Button logoutButton = new Button("Logout");
@@ -136,7 +140,7 @@ public class AdminDashboard {
 
                 editBtn.setOnAction(e -> {
                     Product product = getTableView().getItems().get(getIndex());
-                    stage.getScene().setRoot(new ProductEdit(product).getView(stage));
+                    stage.getScene().setRoot(new ProductEdit(product, user).getView(stage));
                 });
 
                 deleteBtn.setOnAction(e -> {

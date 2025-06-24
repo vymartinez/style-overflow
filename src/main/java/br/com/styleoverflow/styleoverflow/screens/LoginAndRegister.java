@@ -65,9 +65,9 @@ public class LoginAndRegister {
                     feedback.getStyleClass().setAll("text-success");
 
                     if (user.getRole() == Role.ADMIN) {
-                        stage.getScene().setRoot(new AdminDashboard().getView(stage));
+                        stage.getScene().setRoot(new AdminDashboard(loggedInUser).getView(stage));
                     } else { // Role.CLIENT
-                        stage.getScene().setRoot(new CatalogView(stage).getView(stage)); // Assume que CatalogView é a tela do cliente
+                        stage.getScene().setRoot(new CatalogView(stage, loggedInUser).getView(stage)); // Assume que CatalogView é a tela do cliente
                     }
                 } else {
                     feedback.setText("Email ou senha inválidos.");

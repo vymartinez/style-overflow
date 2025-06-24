@@ -1,7 +1,9 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Payment;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -13,7 +15,14 @@ import java.util.List;
 
 public class OrderConfirmation {
 
-    public static Parent showConfirmation(Stage stage, List<Product> products) {
+    public static Parent showConfirmation(Stage stage, List<Product> products, User user) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(30);
         root.setAlignment(Pos.CENTER);
         root.getStyleClass().add("root");
@@ -90,7 +99,7 @@ public class OrderConfirmation {
         voltarButton.getStyleClass().add("btn-primary");
 
         voltarButton.setOnAction(e -> {
-            stage.getScene().setRoot(new CatalogView(stage).getView(stage));
+            stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
         });
 
         confirmarButton.setOnAction(e -> {

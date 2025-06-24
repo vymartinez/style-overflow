@@ -17,7 +17,7 @@ public class UserProfile {
 
     private static final UserService userService = new UserService();
 
-    public static Parent showProfile(Stage stage) {
+    public static Parent showProfile(Stage stage, User user) {
         User currentUser = userService.getLoggedInUser();
 
         if (currentUser == null) {
@@ -143,13 +143,12 @@ public class UserProfile {
             feedbackLabel.setVisible(true);
         });
 
-        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage).getView(stage)));
+        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, currentUser).getView(stage)));
 
         historyButton.setOnAction(e -> {
-            Parent historyView = new OrderHistory().getView(stage);
+            Parent historyView = new OrderHistory().getView(stage, currentUser);
             stage.getScene().setRoot(historyView);
         });
-
 
         return root;
     }

@@ -2,7 +2,9 @@ package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -24,15 +26,23 @@ public class CartView {
     private final TableView<Product> tabela;
     private final ObservableList<Product> produtos;
     private final Label totalLabel;
+    private User user;
 
-    public CartView(List<Product> produtos) {
+    public CartView(List<Product> produtos, User user) {
         tabela = new TableView<>();
         this.produtos = FXCollections.observableArrayList(produtos);
         totalLabel = new Label(String.format("Total: R$ %.2f", produtos.stream().mapToDouble(Product::getPrice).sum()));
+        this.user = user;
     }
 
 
     public Parent getView(Stage currentStage) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
+            currentStage.getScene().setRoot(LoginAndRegister.showLogin(currentStage));
+            return new VBox();
+        }
 
         TableColumn<Product, String> colNome = new TableColumn<>("Nome");
         colNome.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -54,7 +64,7 @@ public class CartView {
         btnRemover.setOnAction(e -> removerSelecionado());
 
         Button btnConfirmar = new Button("Confirmar compra");
-        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(OrderConfirmation.showConfirmation(currentStage, produtos)));
+        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(OrderConfirmation.showConfirmation(currentStage, produtos, user)));
 
         btnVoltar.getStyleClass().add("btn-primary");
         btnRemover.getStyleClass().add("btn-primary");
@@ -73,7 +83,7 @@ public class CartView {
     }
 
     private void voltar(Stage stage) {
-        stage.getScene().setRoot(new CatalogView(stage).getView(stage));
+        stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
     }
 
     private void removerSelecionado() {

@@ -1,6 +1,8 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Role;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.services.AdminService;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
@@ -25,12 +27,21 @@ public class ProductEdit {
 
     private final AdminService adminService = new AdminService(new ProductService());
     private final Product product;
+    private User user;
 
-    public ProductEdit(Product product) {
+    public ProductEdit(Product product, User user) {
         this.product = product;
+        this.user = user;
     }
 
     public VBox getView(Stage stage) {
+
+        if (user == null || user.getRole() != Role.ADMIN) {
+            AlertUtils.showError("Acesso Negado. Você não tem permissão para editar produtos.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox container = new VBox(20);
         container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(20));
@@ -108,7 +119,7 @@ public class ProductEdit {
         backButton.getStyleClass().add("btn-primary");
 
         backButton.setOnAction(e -> {
-            stage.getScene().setRoot(new AdminDashboard().getView(stage));
+            stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
         });
 
         saveButton.setOnAction(e -> {
@@ -124,7 +135,7 @@ public class ProductEdit {
                     product.getId()
                 );
 
-                stage.getScene().setRoot(new AdminDashboard().getView(stage));
+                stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
             } catch (Exception exception) {
                 AlertUtils.showError(exception.getMessage());
             }

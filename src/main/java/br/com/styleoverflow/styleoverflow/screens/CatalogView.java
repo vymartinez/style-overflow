@@ -1,11 +1,13 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.ConnectionFactory;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.WebpToPngConverter;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -25,13 +27,22 @@ public class CatalogView {
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
     private final List<Product> cartProducts = new ArrayList<>();
+    private User user;
 
-    public CatalogView(Stage stage) {
-       clearFiltersButton.setOnAction(e -> limparFiltros(stage));
+    public CatalogView(Stage stage, User user) {
+        clearFiltersButton.setOnAction(e -> limparFiltros(stage));
         clearFiltersButton.setVisible(false);
+        this.user = user;
     }
 
     public VBox getView(Stage stage) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
 
@@ -47,10 +58,10 @@ public class CatalogView {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> updateCatalog(stage));
 
         Button btnCart = new Button("Ver Carrinho");
-        btnCart.setOnAction(e -> new CartView(cartProducts).showCart(stage));
+        btnCart.setOnAction(e -> new CartView(cartProducts, user).showCart(stage));
 
         Button btnProfile = new Button("Perfil");
-        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage)));
+        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, user)));
 
         Button logout = new Button("Logout");
         logout.setOnAction(e-> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
@@ -117,7 +128,7 @@ public class CatalogView {
             seeDetails.getStyleClass().add("btn-primary");
 
             btnAddCart.setOnAction(e -> cartProducts.add(product));
-            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product)));
+            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, user)));
             HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
             info.getChildren().addAll(nome, preco, estoque, buttonBox);
 

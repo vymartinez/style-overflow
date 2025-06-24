@@ -2,14 +2,17 @@ package br.com.styleoverflow.styleoverflow.classes;
 
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
 
     private final int id;
-    private final String name;
     private final String email;
+    private final String password;
     private final String cellphone;
+    private final String name;
     private final String cpf;
     private final String cep;
     private final String address;
@@ -17,20 +20,21 @@ public class User {
     private final Role role;
     private final List<Order> orders;
 
-    public User(Integer id, String name, String email, String cellphone, String cpf, String cep, String address, Gender gender, Role role, List<Order> orders) {
+    public User(int id, String name, String email, String password, String cellphone, String cpf, String cep, String address, Gender gender, Role role, List<Order> orders) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
         this.cellphone = cellphone;
         this.cpf = cpf;
         this.cep = cep;
         this.address = address;
         this.gender = gender;
         this.role = role;
-        this.orders = orders;
+        this.orders = (orders != null) ? new ArrayList<>(orders) : new ArrayList<>();
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -69,4 +73,9 @@ public class User {
     public List<Order> getOrders() {
         return orders;
     }
+
+    public String getPassword() {
+        return password;
+    }
+    
 }

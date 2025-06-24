@@ -1,5 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.utils.WebpToPngConverter;
 import javafx.geometry.Pos;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class ProductDetail {
 
-    public static Parent showProduct(Stage stage, Product product, List<Product> cartProducts) {
+    public static Parent showProduct(Stage stage, Product product, List<CartProduct> cartProducts) {
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");

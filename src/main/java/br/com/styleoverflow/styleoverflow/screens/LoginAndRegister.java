@@ -10,12 +10,12 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
-import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 
 public class LoginAndRegister {
 
     public static Parent showLogin(Stage stage) {
-        List<Product> cartProducts = new ArrayList<>();
+        List<CartProduct> cartProducts = new ArrayList<>();
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(15);
@@ -42,7 +42,7 @@ public class LoginAndRegister {
             if (emailField.getText().equals("admin")) {
                 stage.getScene().setRoot(new AdminDashboard().getView(stage));
             } else if (emailField.getText().equals("user")) {
-                stage.getScene().setRoot(new CatalogView(stage,cartProducts).getView(stage));
+                stage.getScene().setRoot(new CatalogView(stage, cartProducts).getView(stage));
             } else {
                 feedback.setText("Credenciais inválidas.");
                 feedback.getStyleClass().setAll("text-danger");

@@ -1,6 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -9,12 +9,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class UserProfile {
 
-    public static Parent showProfile(Stage stage, List<Product> cartProducts) {
+    public static Parent showProfile(Stage stage, List<CartProduct> cartProducts) {
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");

@@ -1,5 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,9 +18,9 @@ import java.util.List;
 
 public class OrderHistory {
 
-    private final List<Product> cartProducts;
+    private final List<CartProduct> cartProducts;
 
-    public OrderHistory(List<Product> cartProducts) {
+    public OrderHistory(List<CartProduct> cartProducts) {
         this.cartProducts = cartProducts;
     }
 

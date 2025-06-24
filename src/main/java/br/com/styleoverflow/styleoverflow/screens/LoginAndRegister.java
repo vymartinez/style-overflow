@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
 
 public class LoginAndRegister {
 
@@ -116,7 +117,7 @@ public class LoginAndRegister {
         cellphoneField.getStyleClass().add("max-fit");
 
         ComboBox<String> genderBox = new ComboBox<>();
-        genderBox.getItems().addAll("Masculino", "Feminino");
+        genderBox.getItems().addAll(Arrays.stream(Gender.values()).map(Gender::toPortugueseString).toList());
         genderBox.setPromptText("Gênero");
         genderBox.getStyleClass().add("max-fit");
 
@@ -156,7 +157,7 @@ public class LoginAndRegister {
             }
 
             try {
-                Gender gender = Gender.valueOf(genderString); // Converte String para Enum Gender
+                Gender gender = genderString.equals("Masculino") ? Gender.MALE : Gender.FEMALE; // Converte String para Enum Gender
 
                 // Chama o serviço para criar o usuário
                 userService.createUser(name, email, password, cellphone, cpf, cep, address, gender);

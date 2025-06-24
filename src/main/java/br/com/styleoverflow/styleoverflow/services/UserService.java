@@ -19,17 +19,12 @@ public class UserService {
     private final ConnectionFactory factory = new ConnectionFactory();
     private final OrderService orderService = new OrderService(factory);
 
-    public User createUser(String name, String email, String password, String cellphone, String cpf, String cep, String address, Gender gender) {
+    public void createUser(String name, String email, String password, String cellphone, String cpf, String cep, String address, Gender gender) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         CreateUserDTO userDTO = new CreateUserDTO(name, email, hashedPassword, cellphone, cpf, cep, address, gender);
 
-        try(Connection connection = factory.getConnection()) {
-            return new UserDAO(connection).createUser(userDTO);
-        } catch (DomainException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro interno ao criar usuário: " + e.getMessage());
-        }
+        Connection connection = factory.getConnection();
+        new UserDAO(connection).createUser(userDTO);
 
     }
 

@@ -59,12 +59,13 @@ public class UserDAO {
                 String gender = resultSet.getString("gender");
                 String address = resultSet.getString("address");
                 String email = resultSet.getString("email");
+                String password = resultSet.getString("password");
                 String role = resultSet.getString("role");
                 String cellphone = resultSet.getString("cellphone");
                 String cep = resultSet.getString("cep");
                 String cpf = resultSet.getString("cpf");
 
-                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
+                return new User(id, name, email, password, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
             }
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar usuário.");
@@ -87,12 +88,13 @@ public class UserDAO {
                 String gender = resultSet.getString("gender");
                 String address = resultSet.getString("address");
                 String email = resultSet.getString("email");
+                String password = resultSet.getString("password");
                 String role = resultSet.getString("role");
                 String cellphone = resultSet.getString("cellphone");
                 String cep = resultSet.getString("cep");
                 String cpf = resultSet.getString("cpf");
 
-                return new User(id, name, email, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
+                return new User(id, name, email, password, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
             }
         } catch (Exception e) {
             throw new DomainException("erro interno ao buscar usuário.");

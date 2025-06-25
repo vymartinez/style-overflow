@@ -1,8 +1,10 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
-import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.Order;
 import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.services.OrderService;
+import br.com.styleoverflow.styleoverflow.ConnectionFactory;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,8 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import java.util.List;
 
 public class OrderHistory {
-
     private final List<CartProduct> cartProducts;
 
     public OrderHistory(List<CartProduct> cartProducts) {
@@ -27,7 +26,6 @@ public class OrderHistory {
     }
 
     public Parent getView(Stage stage, User user) {
-
         if (user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o histórico de pedidos.");
             stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
@@ -45,57 +43,66 @@ public class OrderHistory {
         ordersList.setAlignment(Pos.TOP_CENTER);
         ordersList.getStyleClass().add("scroll-container");
 
-        List<Order> orders = List.of(
-                new Order("Cropped Java", "data:image/jpeg;base64,...", "DELIVERED", "2024-05-15", "GG", 1, "Boleto", "Masculino"),
-                new Order("Moletom C++", "data:image/jpeg;base64,...", "DELIVERED", "2024-05-25", "G", 2, "Cartão de Crédito", "Unissex"),
-                new Order("Camiseta Dev", "data:image/jpeg;base64,...", "PENDING", "2024-06-01", "M", 1, "PIX", "Masculino")
-        );
+        try {
+            OrderService orderService = new OrderService(new ConnectionFactory());
+            List<Order> orders = orderService.getOrdersByCustomerId(user.getId());
 
-        for (Order order : orders) {
-            VBox card = new VBox(10);
-            card.setAlignment(Pos.CENTER_LEFT);
-            card.setPadding(new Insets(15));
-            card.getStyleClass().add("product-card");
-            card.setMaxWidth(640);
+            if (orders.isEmpty()) {
+                Label noOrders = new Label("Você ainda não fez nenhum pedido.");
+                noOrders.getStyleClass().add("label");
+                ordersList.getChildren().add(noOrders);
+            } else {
+                for (Order order : orders) {
+                    VBox orderCard = new VBox(15);
+                    orderCard.setAlignment(Pos.CENTER_LEFT);
+                    orderCard.setPadding(new Insets(15));
+                    orderCard.getStyleClass().add("product-card");
+                    orderCard.setMaxWidth(640);
 
-            HBox content = new HBox(20);
-            content.setAlignment(Pos.CENTER_LEFT);
+                    // Resumo do pedido
+                    Label orderIdLabel = new Label("Pedido #" + order.getId());
+                    orderIdLabel.setFont(Font.font(16));
 
-            ImageView image = new ImageView(new Image(order.imagePath));
-            image.setFitHeight(100);
-            image.setFitWidth(100);
+                    Label dateLabel = new Label("Data: " + order.getDate());
+                    Label statusLabel = new Label("Status: " + order.getStatus());
+                    Label paymentLabel = new Label("Pagamento: " + order.getPaymentType());
+                    Label totalLabel = new Label("Total: R$ " + String.format("%.2f", order.calculateTotal()));
 
-            VBox details = new VBox(5);
-            Label name = new Label(order.productName);
-            name.setFont(Font.font(18));
-            name.getStyleClass().add("label");
+                    // Botões
+                    HBox buttonsBox = new HBox(10);
+                    Button detailButton = new Button("Ver Detalhes");
+                    detailButton.getStyleClass().add("btn-primary");
+                    detailButton.setOnAction(e -> {
+                        Parent detailView = OrderDetails.getView(stage, order, user, cartProducts);
+                        stage.getScene().setRoot(detailView);
+                    });
 
-            Label statusLabel = new Label("Status: " + order.status);
-            statusLabel.getStyleClass().add("label");
+                    if (order.getStatus() == br.com.styleoverflow.styleoverflow.enums.Status.PENDING) {
+                        Button markDeliveredButton = new Button("Marcar como Entregue");
+                        markDeliveredButton.getStyleClass().add("btn-primary-danger");
+                        markDeliveredButton.setOnAction(e -> {
+                            orderService.updateOrder(br.com.styleoverflow.styleoverflow.enums.Status.DELIVERED, order.getId());
+                            statusLabel.setText("Status: DELIVERED");
+                            buttonsBox.getChildren().remove(markDeliveredButton);
+                        });
+                        buttonsBox.getChildren().add(markDeliveredButton);
+                    }
+                    buttonsBox.getChildren().add(detailButton);
 
-            Button detailButton = new Button("Ver Detalhes");
-            detailButton.getStyleClass().add("btn-primary");
-            detailButton.setOnAction(e -> {
-                Parent detailView = OrderDetails.getView(stage, order, user, cartProducts);
-                stage.getScene().setRoot(detailView);
-            });
+                    orderCard.getChildren().addAll(
+                            orderIdLabel,
+                            dateLabel,
+                            statusLabel,
+                            paymentLabel,
+                            totalLabel,
+                            buttonsBox
+                    );
 
-            details.getChildren().addAll(name, statusLabel, detailButton);
-
-            if (order.status.equalsIgnoreCase("PENDING")) {
-                Button markDeliveredButton = new Button("Marcar como Entregue");
-                markDeliveredButton.getStyleClass().add("btn-primary-danger");
-                markDeliveredButton.setOnAction(e -> {
-                    order.status = "DELIVERED";
-                    statusLabel.setText("Status: DELIVERED");
-                    details.getChildren().remove(markDeliveredButton);
-                });
-                details.getChildren().add(markDeliveredButton);
+                    ordersList.getChildren().add(orderCard);
+                }
             }
-
-            content.getChildren().addAll(image, details);
-            card.getChildren().add(content);
-            ordersList.getChildren().add(card);
+        } catch (Exception e) {
+            AlertUtils.showError("Erro ao carregar histórico de pedidos: " + e.getMessage());
         }
 
         ScrollPane scrollPane = new ScrollPane(ordersList);
@@ -108,34 +115,7 @@ public class OrderHistory {
         backButton.getStyleClass().add("btn-primary");
         backButton.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts, user)));
 
-        VBox content = new VBox(20, title, scrollPane, backButton);
-        content.setAlignment(Pos.TOP_CENTER);
-
-        root.getChildren().add(content);
-
+        root.getChildren().addAll(title, scrollPane, backButton);
         return root;
-    }
-
-    public static class Order {
-        String productName;
-        String imagePath;
-        String status;
-        String date;
-        String size;
-        int quantity;
-        String paymentMethod;
-        String gender;
-
-        public Order(String productName, String imagePath, String status, String date,
-                     String size, int quantity, String paymentMethod, String gender) {
-            this.productName = productName;
-            this.imagePath = imagePath;
-            this.status = status;
-            this.date = date;
-            this.size = size;
-            this.quantity = quantity;
-            this.paymentMethod = paymentMethod;
-            this.gender = gender;
-        }
     }
 }

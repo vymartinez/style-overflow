@@ -1,11 +1,13 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.ConnectionFactory;
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Payment;
-import javafx.collections.ObservableList;
+import br.com.styleoverflow.styleoverflow.services.OrderService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -13,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderConfirmation {
@@ -110,7 +113,21 @@ public class OrderConfirmation {
 
         confirmarButton.setOnAction(e -> {
             Payment metodo = pagamentoBox.getValue();
-            System.out.println("Pedido confirmado com pagamento via: " + metodo);
+
+            try {
+                OrderService orderService = new OrderService(new ConnectionFactory());
+                orderService.createOrder(user.getId(), metodo, new ArrayList<>(cartProducts));
+                cartProducts.clear();
+
+                // Mensagem de sucesso
+                //AlertUtils.showInfo("Pedido realizado com sucesso!");
+
+                // Redirecionar (para o catálogo ou tela de pedidos)
+                stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                AlertUtils.showError(ex.getMessage());
+            }
         });
 
         VBox content = new VBox(20,

@@ -2,6 +2,8 @@ package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -24,7 +26,14 @@ public class OrderHistory {
         this.cartProducts = cartProducts;
     }
 
-    public Parent getView(Stage stage) {
+    public Parent getView(Stage stage, User user) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o histórico de pedidos.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");
@@ -67,7 +76,7 @@ public class OrderHistory {
             Button detailButton = new Button("Ver Detalhes");
             detailButton.getStyleClass().add("btn-primary");
             detailButton.setOnAction(e -> {
-                Parent detailView = OrderDetails.getView(stage, order);
+                Parent detailView = OrderDetails.getView(stage, order, user, cartProducts);
                 stage.getScene().setRoot(detailView);
             });
 
@@ -97,7 +106,7 @@ public class OrderHistory {
 
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-primary");
-        backButton.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts)));
+        backButton.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts, user)));
 
         VBox content = new VBox(20, title, scrollPane, backButton);
         content.setAlignment(Pos.TOP_CENTER);

@@ -1,35 +1,52 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.Cart;
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class CartView {
 
     private final TableView<CartProduct> tabela;
     private final ObservableList<CartProduct> cartProdutos;
     private final Label totalLabel;
+    private User user;
 
-    public CartView(List<CartProduct> cartProdutos) {
+    public CartView(List<CartProduct> cartProdutos, User user) {
         tabela = new TableView<>();
         this.cartProdutos = FXCollections.observableArrayList(cartProdutos);
-        totalLabel = new Label(String.format("Total: R$ %.2f",
-                cartProdutos.stream().mapToDouble(CartProduct::getSubtotal).sum()));
+        totalLabel = new Label(String.format("Total: R$ %.2f", cartProdutos.stream().mapToDouble(CartProduct::getSubtotal).sum()));
+        this.user = user;
+
     }
 
     public Parent getView(Stage currentStage) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
+            currentStage.getScene().setRoot(LoginAndRegister.showLogin(currentStage));
+            return new VBox();
+        }
+
         TableColumn<CartProduct, String> colNome = new TableColumn<>("Nome");
         colNome.setCellValueFactory(cellData -> {
             Product product = cellData.getValue().getProduct();
@@ -106,8 +123,7 @@ public class CartView {
         btnRemover.setOnAction(e -> removerSelecionado());
 
         Button btnConfirmar = new Button("Confirmar compra");
-        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(
-                OrderConfirmation.showConfirmation(currentStage, cartProdutos)));
+        btnConfirmar.setOnAction(e -> currentStage.getScene().setRoot(OrderConfirmation.showConfirmation(currentStage, cartProdutos, user)));
 
         btnVoltar.getStyleClass().add("btn-primary");
         btnRemover.getStyleClass().add("btn-primary");
@@ -127,7 +143,7 @@ public class CartView {
 
 
     private void voltar(Stage stage) {
-        stage.getScene().setRoot(new CatalogView(stage, cartProdutos).getView(stage));
+        stage.getScene().setRoot(new CatalogView(stage, cartProdutos, user).getView(stage));
     }
 
     private void removerSelecionado() {

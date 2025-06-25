@@ -1,5 +1,11 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Role;
+import br.com.styleoverflow.styleoverflow.services.UserService;
+
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -12,7 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 
+import java.util.Arrays;
+
 public class LoginAndRegister {
+
+    private static final UserService userService = new UserService();
+
+    public static User loggedInUser = null;
 
     public static Parent showLogin(Stage stage) {
         List<CartProduct> cartProducts = new ArrayList<>();
@@ -39,13 +51,40 @@ public class LoginAndRegister {
         Label feedback = new Label();
 
         loginBtn.setOnAction(e -> {
-            if (emailField.getText().equals("admin")) {
-                stage.getScene().setRoot(new AdminDashboard().getView(stage));
-            } else if (emailField.getText().equals("user")) {
-                stage.getScene().setRoot(new CatalogView(stage, cartProducts).getView(stage));
-            } else {
-                feedback.setText("Credenciais inválidas.");
+            String email = emailField.getText();
+            String password = passwordField.getText();
+
+            if (email.isEmpty() || password.isEmpty()) {
+                feedback.setText("Por favor, preencha todos os campos.");
                 feedback.getStyleClass().setAll("text-danger");
+                return;
+            }
+
+            try {
+                User user = userService.login(email, password); // Chama o serviço de login
+
+                if (user != null) {
+                    loggedInUser = user; // Armazena o usuário logado
+                    feedback.setText("Login realizado com sucesso! Bem-vindo, " + user.getName() + "!");
+                    feedback.getStyleClass().setAll("text-success");
+
+                    if (user.getRole() == Role.ADMIN) {
+                        stage.getScene().setRoot(new AdminDashboard(loggedInUser).getView(stage));
+                    } else { // Role.CLIENT
+                        stage.getScene().setRoot(new CatalogView(stage, cartProducts, loggedInUser).getView(stage)); // Assume que CatalogView é a tela do cliente
+                    }
+                } else {
+                    feedback.setText("Email ou senha inválidos.");
+                    feedback.getStyleClass().setAll("text-danger");
+                }
+            } catch (DomainException ex) {
+                feedback.setText("Erro: " + ex.getMessage());
+                feedback.getStyleClass().setAll("text-danger");
+                ex.printStackTrace();
+            } catch (RuntimeException ex) {
+                feedback.setText("Erro interno do sistema.");
+                feedback.getStyleClass().setAll("text-danger");
+                ex.printStackTrace();
             }
         });
 
@@ -82,7 +121,7 @@ public class LoginAndRegister {
         cellphoneField.getStyleClass().add("max-fit");
 
         ComboBox<String> genderBox = new ComboBox<>();
-        genderBox.getItems().addAll("Masculino", "Feminino");
+        genderBox.getItems().addAll(Arrays.stream(Gender.values()).map(Gender::toPortugueseString).toList());
         genderBox.setPromptText("Gênero");
         genderBox.getStyleClass().add("max-fit");
 
@@ -104,12 +143,54 @@ public class LoginAndRegister {
         Label feedback = new Label();
 
         registerBtn.setOnAction(e -> {
-            if (emailField.getText().isEmpty() || passwordField.getText().isEmpty()) {
-                feedback.setText("Preencha todos os campos obrigatórios.");
+            String name = nameField.getText();
+            String email = emailField.getText();
+            String password = passwordField.getText();
+            String cellphone = cellphoneField.getText();
+            String cpf = cpfField.getText();
+            String cep = cepField.getText();
+            String address = addressField.getText();
+            String genderString = genderBox.getValue();
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() ||
+                cellphone.isEmpty() || cpf.isEmpty() || cep.isEmpty() ||
+                address.isEmpty() || genderString == null) {
+                feedback.setText("Por favor, preencha todos os campos obrigatórios.");
                 feedback.getStyleClass().setAll("text-danger");
-            } else {
-                feedback.setText("Conta criada com sucesso!");
+                return;
+            }
+
+            try {
+                Gender gender = genderString.equals("Masculino") ? Gender.MALE : Gender.FEMALE; // Converte String para Enum Gender
+
+                // Chama o serviço para criar o usuário
+                userService.createUser(name, email, password, cellphone, cpf, cep, address, gender);
+
+                feedback.setText("Conta criada com sucesso! Você já pode fazer login.");
                 feedback.getStyleClass().setAll("text-success");
+
+                // Limpar campos após o sucesso
+                nameField.clear();
+                emailField.clear();
+                passwordField.clear();
+                cellphoneField.clear();
+                cpfField.clear();
+                cepField.clear();
+                addressField.clear();
+                genderBox.getSelectionModel().clearSelection();
+
+            } catch (IllegalArgumentException ex) {
+                feedback.setText("Erro no gênero selecionado.");
+                feedback.getStyleClass().setAll("text-danger");
+                ex.printStackTrace();
+            } catch (DomainException ex) {
+                feedback.setText("Erro ao criar conta: " + ex.getMessage());
+                feedback.getStyleClass().setAll("text-danger");
+                ex.printStackTrace();
+            } catch (RuntimeException ex) {
+                feedback.setText("Erro interno do sistema ao criar conta.");
+                feedback.getStyleClass().setAll("text-danger");
+                ex.printStackTrace();
             }
         });
 

@@ -1,8 +1,11 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
+import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Payment;
 import javafx.collections.ObservableList;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -10,9 +13,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class OrderConfirmation {
 
-    public static Parent showConfirmation(Stage stage, ObservableList<CartProduct> cartProducts) {
+    public static Parent showConfirmation(Stage stage, ObservableList<CartProduct> cartProducts, User user) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(30);
         root.setAlignment(Pos.CENTER);
         root.getStyleClass().add("root");
@@ -93,13 +105,12 @@ public class OrderConfirmation {
         voltarButton.getStyleClass().add("btn-primary");
 
         voltarButton.setOnAction(e -> {
-            stage.getScene().setRoot(new CatalogView(stage, cartProducts).getView(stage));
+            stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
         });
 
         confirmarButton.setOnAction(e -> {
             Payment metodo = pagamentoBox.getValue();
             System.out.println("Pedido confirmado com pagamento via: " + metodo);
-            // Aqui você pode adicionar a lógica para finalizar o pedido
         });
 
         VBox content = new VBox(20,

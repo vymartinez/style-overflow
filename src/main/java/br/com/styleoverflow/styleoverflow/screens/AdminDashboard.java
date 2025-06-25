@@ -1,8 +1,10 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.Product;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.enums.Role;
 import br.com.styleoverflow.styleoverflow.services.AdminService;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
@@ -30,8 +32,17 @@ public class AdminDashboard {
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
     private final TableView<Product> table = new TableView<>();
+    private User user;
+
+    public AdminDashboard(User user) {this.user = user;}
 
     public BorderPane getView(Stage stage) {
+
+        if (user == null || !user.getRole().equals(Role.ADMIN)) {
+            AlertUtils.showError("Acesso negado. Você não tem permissão para acessar o painel de administração.");
+            return new BorderPane();
+        }
+
         Label title = new Label("Painel de Administração");
         title.getStyleClass().add("text-primary");
 
@@ -54,12 +65,15 @@ public class AdminDashboard {
         filterBox.setPadding(new Insets(10));
 
         Button registerButton = new Button("Cadastrar Produto");
-        registerButton.setOnAction(e -> stage.getScene().setRoot(new ProductRegister().getView(stage)));
+        registerButton.setOnAction(e -> stage.getScene().setRoot(new ProductRegister(user).getView(stage)));
         registerButton.getStyleClass().add("btn-primary");
 
         Button logoutButton = new Button("Logout");
         logoutButton.getStyleClass().add("btn-primary");
-        logoutButton.setOnAction(e -> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
+        logoutButton.setOnAction(e -> {
+            LoginAndRegister.loggedInUser = null;
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+        });
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -126,7 +140,7 @@ public class AdminDashboard {
 
                 editBtn.setOnAction(e -> {
                     Product product = getTableView().getItems().get(getIndex());
-                    stage.getScene().setRoot(new ProductEdit(product).getView(stage));
+                    stage.getScene().setRoot(new ProductEdit(product, user).getView(stage));
                 });
 
                 deleteBtn.setOnAction(e -> {
@@ -172,15 +186,17 @@ public class AdminDashboard {
 
     private void cleanFilters(Stage stage) {
         genderFilter.getSelectionModel().clearSelection();
-        genderFilter.setButtonCell(new ListCell() {
-            protected void updateItem(Gender item, boolean empty) {
+        genderFilter.setButtonCell(new ListCell<String>() { //
+            @Override
+            protected void updateItem(String item, boolean empty) { // O item é String aqui
                 super.updateItem(item, empty);
                 setText("Filtrar por gênero");
             }
         });
         sizeFilter.getSelectionModel().clearSelection();
-        sizeFilter.setButtonCell(new ListCell() {
-            protected void updateItem(Size item, boolean empty) {
+        sizeFilter.setButtonCell(new ListCell<Size>() { //
+            @Override
+            protected void updateItem(Size item, boolean empty) { // O item é Size aqui
                 super.updateItem(item, empty);
                 setText("Filtrar por tamanho");
             }

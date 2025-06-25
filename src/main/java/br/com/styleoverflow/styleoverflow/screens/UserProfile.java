@@ -1,6 +1,10 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
+import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.services.UserService;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -12,9 +16,19 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class UserProfile {
 
-    public static Parent showProfile(Stage stage, List<CartProduct> cartProducts) {
+public class UserProfile {
+    private static final UserService userService = new UserService();
+
+    public static Parent showProfile(Stage stage, List<CartProduct> cartProducts, User user) {
+        User currentUser = userService.getLoggedInUser();
+
+        if (currentUser == null) {
+            AlertUtils.showError("Nenhum usuário logado. Por favor, faça login.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(30);
         root.setAlignment(Pos.TOP_CENTER);
         root.getStyleClass().add("root");
@@ -23,22 +37,22 @@ public class UserProfile {
         title.getStyleClass().add("text-primary");
 
         Circle avatarCircle = new Circle(50, Color.web("#6c63ff"));
-        Label initialsLabel = new Label("U");
+        Label initialsLabel = new Label(getInitials(currentUser.getName()));
         initialsLabel.setTextFill(Color.WHITE);
         initialsLabel.setFont(Font.font("Arial", 28));
         StackPane avatarPane = new StackPane(avatarCircle, initialsLabel);
 
         Label nameTitle = new Label("Nome:");
-        Label nameLabel = new Label("");
+        Label nameLabel = new Label(currentUser.getName());
 
         Label emailTitle = new Label("Email:");
-        Label emailLabel = new Label("");
+        Label emailLabel = new Label(currentUser.getEmail());
 
-        TextField nameField = new TextField();
+        TextField nameField = new TextField(currentUser.getName());
         nameField.setPromptText("Nome");
         nameField.getStyleClass().add("max-fit");
 
-        TextField emailField = new TextField();
+        TextField emailField = new TextField(currentUser.getEmail());
         emailField.setPromptText("Email");
         emailField.getStyleClass().add("max-fit");
 
@@ -132,14 +146,13 @@ public class UserProfile {
             feedbackLabel.setVisible(true);
         });
 
-        backButton.setOnAction(e -> {
-            stage.getScene().setRoot(new CatalogView(stage, cartProducts).getView(stage));
-        });
+        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, cartProducts, currentUser).getView(stage)));
 
         historyButton.setOnAction(e -> {
-            Parent historyView = new OrderHistory(cartProducts).getView(stage);
+            Parent historyView = new OrderHistory(cartProducts).getView(stage, currentUser);
             stage.getScene().setRoot(historyView);
         });
+
 
         return root;
     }

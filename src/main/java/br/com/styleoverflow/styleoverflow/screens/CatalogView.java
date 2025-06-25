@@ -1,11 +1,13 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.WebpToPngConverter;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -13,7 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,17 +27,26 @@ public class CatalogView {
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
     private final List<CartProduct> cartProducts;
+    private User user;
     private final Label subtotalLabel;
 
-    public CatalogView(Stage stage, List<CartProduct> cartProducts) {
+    public CatalogView(Stage stage, List<CartProduct> cartProducts, User currentUser) {
         this.cartProducts = cartProducts;
         this.subtotalLabel = new Label("Subtotal: R$ 0,00");
         subtotalLabel.setFont(new Font(14));
         clearFiltersButton.setOnAction(e -> limparFiltros(stage));
-        clearFiltersButton.setVisible(false);
+       clearFiltersButton.setVisible(false);
+        this.user = user;
     }
 
     public VBox getView(Stage stage) {
+
+        if (user == null) {
+            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
+            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            return new VBox();
+        }
+
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
 
@@ -52,10 +62,10 @@ public class CatalogView {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> updateCatalog(stage));
 
         Button btnCart = new Button("Ver Carrinho");
-        btnCart.setOnAction(e -> new CartView(cartProducts).showCart(stage));
+        btnCart.setOnAction(e -> new CartView(cartProducts, user).showCart(stage));
 
         Button btnProfile = new Button("Perfil");
-        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts)));
+        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts, user)));
         Button logout = new Button("Logout");
         logout.setOnAction(e -> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
 
@@ -69,6 +79,7 @@ public class CatalogView {
         HBox topBar = new HBox(10, genderFilter, sizeFilter, searchField, clearFiltersButton, btnCart,
                 new Separator(), btnProfile, new Separator(), subtotalLabel, logout);
         topBar.setAlignment(Pos.CENTER_LEFT);
+
 
         catalogBox.setPadding(new Insets(10));
         updateCatalog(stage);
@@ -153,8 +164,7 @@ public class CatalogView {
                 atualizarSubtotal();
             });
 
-            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, cartProducts)));
-
+            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, cartProducts, user)));
             HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
             info.getChildren().addAll(nome, preco, estoque, buttonBox);
 

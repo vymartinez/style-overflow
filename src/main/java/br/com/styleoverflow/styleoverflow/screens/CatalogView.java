@@ -36,7 +36,7 @@ public class CatalogView {
         subtotalLabel.setFont(new Font(14));
         clearFiltersButton.setOnAction(e -> limparFiltros(stage));
        clearFiltersButton.setVisible(false);
-        this.user = user;
+        this.user = currentUser;
     }
 
     public VBox getView(Stage stage) {

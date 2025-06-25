@@ -1,6 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.ConnectionFactory;
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
@@ -14,7 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,13 +26,17 @@ public class CatalogView {
     private final ComboBox<Size> sizeFilter = new ComboBox<>();
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
-    private final List<Product> cartProducts = new ArrayList<>();
+    private final List<CartProduct> cartProducts;
     private User user;
+    private final Label subtotalLabel;
 
-    public CatalogView(Stage stage, User user) {
+    public CatalogView(Stage stage, List<CartProduct> cartProducts, User currentUser) {
+        this.cartProducts = cartProducts;
+        this.subtotalLabel = new Label("Subtotal: R$ 0,00");
+        subtotalLabel.setFont(new Font(14));
         clearFiltersButton.setOnAction(e -> limparFiltros(stage));
-        clearFiltersButton.setVisible(false);
-        this.user = user;
+       clearFiltersButton.setVisible(false);
+        this.user = currentUser;
     }
 
     public VBox getView(Stage stage) {
@@ -61,16 +65,19 @@ public class CatalogView {
         btnCart.setOnAction(e -> new CartView(cartProducts, user).showCart(stage));
 
         Button btnProfile = new Button("Perfil");
-        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, user)));
-
+        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts, user)));
         Button logout = new Button("Logout");
-        logout.setOnAction(e-> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
+        logout.setOnAction(e -> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
 
         btnCart.getStyleClass().add("btn-primary");
         btnProfile.getStyleClass().add("btn-primary");
         logout.getStyleClass().add("btn-primary");
 
-        HBox topBar = new HBox(10, genderFilter, sizeFilter, searchField, clearFiltersButton, btnCart, new Separator(), btnProfile,new Text("                                             "), logout);
+        // Atualiza o subtotal inicial
+        atualizarSubtotal();
+
+        HBox topBar = new HBox(10, genderFilter, sizeFilter, searchField, clearFiltersButton, btnCart,
+                new Separator(), btnProfile, new Separator(), subtotalLabel, logout);
         topBar.setAlignment(Pos.CENTER_LEFT);
 
 
@@ -88,6 +95,13 @@ public class CatalogView {
         return root;
     }
 
+    private void atualizarSubtotal() {
+        double subtotal = cartProducts.stream()
+                .mapToDouble(cp -> cp.getProduct().getPrice() * cp.getQuantity())
+                .sum();
+        subtotalLabel.setText(String.format("Subtotal: R$ %.2f", subtotal));
+    }
+
     private void updateCatalog(Stage stage) {
         catalogBox.getChildren().clear();
 
@@ -96,7 +110,8 @@ public class CatalogView {
 
         List<Product> filtered = allProducts.stream()
                 .filter(p -> {
-                    if (genderFilter.getValue() != null && genderFilter.getValue() != p.getGender().toPortugueseString()) return false;
+                    if (genderFilter.getValue() != null && genderFilter.getValue() != p.getGender().toPortugueseString())
+                        return false;
                     if (sizeFilter.getValue() != null && sizeFilter.getValue() != p.getSize()) return false;
                     return p.getName().toLowerCase().contains(searchField.getText().toLowerCase());
                 })
@@ -127,27 +142,73 @@ public class CatalogView {
             btnAddCart.getStyleClass().add("btn-primary");
             seeDetails.getStyleClass().add("btn-primary");
 
-            btnAddCart.setOnAction(e -> cartProducts.add(product));
-            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, user)));
+            btnAddCart.setOnAction(e -> {
+                if (product.getStock() <= 0) {
+                    showAlert("Erro", "Produto sem estoque disponível.");
+                    return;
+                }
+
+                CartProduct existingItem = findProductInCart(product);
+
+                if (existingItem != null) {
+                    if (existingItem.getQuantity() < product.getStock()) {
+                        existingItem.setQuantity(existingItem.getQuantity() + 1);
+                        showAlert("Sucesso", "Quantidade do produto atualizada no carrinho!");
+                    } else {
+                        showAlert("Aviso", "Quantidade máxima em estoque já adicionada ao carrinho.");
+                    }
+                } else {
+                    cartProducts.add(new CartProduct(product, 1));
+                    showAlert("Sucesso", "Produto adicionado ao carrinho!");
+                }
+                atualizarSubtotal();
+            });
+
+            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, cartProducts, user)));
             HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
             info.getChildren().addAll(nome, preco, estoque, buttonBox);
 
             box.getChildren().addAll(image, info);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return box;
     }
 
+    private CartProduct findProductInCart(Product product) {
+        for (CartProduct cartItem : cartProducts) {
+            Product p = cartItem.getProduct();
+            if (p.getId().equals(product.getId()) &&
+                    p.getName().equals(product.getName()) &&
+                    p.getSize() == product.getSize() &&
+                    p.getColor().equals(product.getColor())) {
+                return cartItem;
+            }
+        }
+        return null;
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     private void limparFiltros(Stage stage) {
         genderFilter.getSelectionModel().clearSelection();
-        genderFilter.setButtonCell(new ListCell() {
-            protected void updateItem(Gender item, boolean empty) {
+        genderFilter.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 setText("Filtrar por gênero");
             }
         });
         sizeFilter.getSelectionModel().clearSelection();
-        sizeFilter.setButtonCell(new ListCell() {
+        sizeFilter.setButtonCell(new ListCell<Size>() {
+            @Override
             protected void updateItem(Size item, boolean empty) {
                 super.updateItem(item, empty);
                 setText("Filtrar por tamanho");

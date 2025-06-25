@@ -16,18 +16,18 @@ public class CartItemView extends HBox {
         this.user = user;
 
         Label nomeLabel = new Label(item.getProduct().getName());
-        Label quantidadeLabel = new Label(item.getQuantity().toString());
+        Label tamanhoLabel = new Label(item.getProduct().getSize().toString());
         Label precoLabel = new Label("R$ " + String.format("%.2f", item.getProduct().getPrice()));
+
         Button removerButton = new Button("Remover");
+        removerButton.setOnAction(e -> onRemove.run());
 
         nomeLabel.setPrefWidth(200);
-        quantidadeLabel.setPrefWidth(100);
+        tamanhoLabel.setPrefWidth(100);
         precoLabel.setPrefWidth(120);
-
-        removerButton.setOnAction(e -> onRemove.run());
 
         this.setSpacing(20);
         this.setPadding(new Insets(10));
-        this.getChildren().addAll(nomeLabel, quantidadeLabel, precoLabel, removerButton);
+        this.getChildren().addAll(nomeLabel, tamanhoLabel, precoLabel, removerButton);
     }
 }

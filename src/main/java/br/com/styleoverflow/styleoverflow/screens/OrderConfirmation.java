@@ -1,9 +1,13 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.ConnectionFactory;
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Payment;
+import br.com.styleoverflow.styleoverflow.services.OrderService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -11,11 +15,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderConfirmation {
 
-    public static Parent showConfirmation(Stage stage, List<Product> products, User user) {
+    public static Parent showConfirmation(Stage stage, ObservableList<CartProduct> cartProducts, User user) {
 
         if (user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
@@ -41,43 +46,47 @@ public class OrderConfirmation {
         headerName.setMinWidth(200);
         headerName.getStyleClass().add("table-header");
 
-        Label headerUnit = new Label("Preço Unitário");
+        Label headerUnit = new Label("Tamanho");
         headerUnit.setMinWidth(100);
         headerUnit.getStyleClass().add("table-header");
+
+        Label headerQty = new Label("Quantidade");
+        headerQty.setMinWidth(80);
+        headerQty.getStyleClass().add("table-header");
 
         Label headerSub = new Label("Subtotal");
         headerSub.setMinWidth(100);
         headerSub.getStyleClass().add("table-header");
 
-        headerRow.getChildren().addAll(headerName, headerUnit, headerSub);
+        headerRow.getChildren().addAll(headerName, headerUnit, headerQty, headerSub);
         productList.getChildren().add(headerRow);
 
         double total = 0;
 
-        for (Product p : products) {
-            //int qtd = p.getQuantidade();
-            int qtd = 1;
-            double unit = p.getPrice();
-            double subtotal = qtd * unit;
+        for (CartProduct cartProduct : cartProducts) {
+            double subtotal = cartProduct.getSubtotal();
             total += subtotal;
 
             HBox tableRow = new HBox(10);
             tableRow.setAlignment(Pos.CENTER_LEFT);
 
-            Label qtdName = new Label(qtd + "x " + p.getName());
-            qtdName.setMinWidth(200);
-            qtdName.getStyleClass().add("label");
+            Label nameLabel = new Label(cartProduct.getProduct().getName());
+            nameLabel.setMinWidth(200);
+            nameLabel.getStyleClass().add("label");
 
-            Label unitPrice = new Label("R$ " + String.format("%.2f", unit));
-            unitPrice.setMinWidth(100);
-            unitPrice.getStyleClass().add("label");
+            Label sizeLabel = new Label(cartProduct.getProduct().getSize().toString());
+            sizeLabel.setMinWidth(80);
+            sizeLabel.getStyleClass().add("label");
 
-            Label subTotal = new Label("R$ " + String.format("%.2f", subtotal));
-            subTotal.setMinWidth(100);
-            subTotal.getStyleClass().add("label");
+            Label qtyLabel = new Label(String.valueOf(cartProduct.getQuantity()));
+            qtyLabel.setMinWidth(80);
+            qtyLabel.getStyleClass().add("label");
 
-            tableRow.getChildren().addAll(qtdName, unitPrice, subTotal);
+            Label subTotalLabel = new Label("R$ " + String.format("%.2f", subtotal));
+            subTotalLabel.setMinWidth(100);
+            subTotalLabel.getStyleClass().add("label");
 
+            tableRow.getChildren().addAll(nameLabel, sizeLabel, qtyLabel, subTotalLabel);
             productList.getChildren().add(tableRow);
         }
 
@@ -99,12 +108,26 @@ public class OrderConfirmation {
         voltarButton.getStyleClass().add("btn-primary");
 
         voltarButton.setOnAction(e -> {
-            stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
+            stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
         });
 
         confirmarButton.setOnAction(e -> {
             Payment metodo = pagamentoBox.getValue();
-            System.out.println("Pedido confirmado com pagamento via: " + metodo);
+
+            try {
+                OrderService orderService = new OrderService(new ConnectionFactory());
+                orderService.createOrder(user.getId(), metodo, new ArrayList<>(cartProducts));
+                cartProducts.clear();
+
+                // Mensagem de sucesso
+                //AlertUtils.showInfo("Pedido realizado com sucesso!");
+
+                // Redirecionar (para o catálogo ou tela de pedidos)
+                stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                AlertUtils.showError(ex.getMessage());
+            }
         });
 
         VBox content = new VBox(20,

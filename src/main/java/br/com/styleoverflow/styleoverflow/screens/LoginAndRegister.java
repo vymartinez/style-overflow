@@ -14,6 +14,9 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import java.util.ArrayList;
+import java.util.List;
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 
 import java.util.Arrays;
 
@@ -24,6 +27,7 @@ public class LoginAndRegister {
     public static User loggedInUser = null;
 
     public static Parent showLogin(Stage stage) {
+        List<CartProduct> cartProducts = new ArrayList<>();
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(15);
@@ -67,7 +71,7 @@ public class LoginAndRegister {
                     if (user.getRole() == Role.ADMIN) {
                         stage.getScene().setRoot(new AdminDashboard(loggedInUser).getView(stage));
                     } else { // Role.CLIENT
-                        stage.getScene().setRoot(new CatalogView(stage, loggedInUser).getView(stage)); // Assume que CatalogView é a tela do cliente
+                        stage.getScene().setRoot(new CatalogView(stage, cartProducts, loggedInUser).getView(stage)); // Assume que CatalogView é a tela do cliente
                     }
                 } else {
                     feedback.setText("Email ou senha inválidos.");
@@ -161,7 +165,7 @@ public class LoginAndRegister {
 
                 // Chama o serviço para criar o usuário
                 userService.createUser(name, email, password, cellphone, cpf, cep, address, gender);
-                
+
                 feedback.setText("Conta criada com sucesso! Você já pode fazer login.");
                 feedback.getStyleClass().setAll("text-success");
 

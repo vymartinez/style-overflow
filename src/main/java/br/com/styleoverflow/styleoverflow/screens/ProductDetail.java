@@ -1,5 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
@@ -11,12 +12,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import java.util.List;
 
 public class ProductDetail {
 
-    private User user;
-
-    public static Parent showProduct(Stage stage, Product product, User user) {
+    public static Parent showProduct(Stage stage, Product product, List<CartProduct> cartProducts, User user) {
 
         if (user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver os detalhes do produto.");
@@ -67,9 +67,11 @@ public class ProductDetail {
             root.getChildren().add(content);
 
             voltarButton.setOnAction(e -> {
-                stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
+                stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
             });
-        }catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return root;
     }
 }

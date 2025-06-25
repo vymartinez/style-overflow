@@ -32,7 +32,7 @@ public class OrderDAO {
 
         try {
             connection.setAutoCommit(false);
-            PreparedStatement statement = connection.prepareStatement(query);
+            PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setInt(1, orderDto.userId());
             statement.setDate(2, new Date(System.currentTimeMillis()));
             statement.setString(3, Status.PENDING.toString());

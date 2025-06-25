@@ -28,7 +28,7 @@ public class Cart {
         this.products = products;
     }
 
-    public double calculateTotal() {
-        return products.stream().mapToDouble(CartProduct::calculateSubtotal).sum();
-    }
+    //public double calculateTotal() {
+    //    return products.stream().mapToDouble(CartProduct::calculateSubtotal).sum();
+    //}
 }

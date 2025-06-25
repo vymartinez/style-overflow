@@ -1,7 +1,8 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.CartProduct;
 import br.com.styleoverflow.styleoverflow.DomainException;
-import br.com.styleoverflow.styleoverflow.classes.User; 
+import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.services.UserService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Pos;
@@ -13,11 +14,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class UserProfile {
+import java.util.List;
 
+
+public class UserProfile {
     private static final UserService userService = new UserService();
 
-    public static Parent showProfile(Stage stage, User user) {
+    public static Parent showProfile(Stage stage, List<CartProduct> cartProducts, User user) {
         User currentUser = userService.getLoggedInUser();
 
         if (currentUser == null) {
@@ -143,12 +146,13 @@ public class UserProfile {
             feedbackLabel.setVisible(true);
         });
 
-        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, currentUser).getView(stage)));
+        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, cartProducts, currentUser).getView(stage)));
 
         historyButton.setOnAction(e -> {
-            Parent historyView = new OrderHistory().getView(stage, currentUser);
+            Parent historyView = new OrderHistory(cartProducts).getView(stage, currentUser);
             stage.getScene().setRoot(historyView);
         });
+
 
         return root;
     }

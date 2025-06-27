@@ -2,6 +2,9 @@ package br.com.styleoverflow.styleoverflow.utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+
+import java.util.Optional;
 
 public class AlertUtils {
     public static void showError(String message) {
@@ -10,5 +13,17 @@ public class AlertUtils {
         alert.setHeaderText("Ocorreu um erro");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public static void showConfirmation(String message, Runnable onConfirm) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar Ação");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            onConfirm.run();
+        }
     }
 }

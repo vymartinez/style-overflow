@@ -1,4 +1,4 @@
-INSERT INTO users (name, email, password, role, gender, cpf, address, cep, cellphone) VALUES ("administrador", "admin@gmail.com", "123456", "ADMIN", "MALE", "12345678910", "Estrutural Rua 9", "12345678", "61912345678");
+INSERT INTO users (name, email, password, role, gender, cpf, address, cep, cellphone) VALUES ("administrador", "admin@gmail.com", "$2a$10$tCwQ7e5YZsK3JKBx0prnmu4yQpXbfgzOoUowAYvxwuVEfzcYqFS6K", "ADMIN", "MALE", "12345678910", "Estrutural Rua 9", "12345678", "61912345678");
 
 -- Camiseta Commit Pray
 INSERT INTO products (name, size, gender, photo_url, color, stock, price, deleted) VALUES

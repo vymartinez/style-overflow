@@ -48,16 +48,48 @@ public class UserProfile {
         Label emailTitle = new Label("Email:");
         Label emailLabel = new Label(currentUser.getEmail());
 
+        Label passwordTitle = new Label("Senha:");
+        Label passwordMaskedLabel = new Label("********");
+
+        Label cellphoneTitle = new Label("Celular:");
+        Label cellphoneLabel = new Label(currentUser.getCellphone());
+
+        Label cepTitle = new Label("CEP:");
+        Label cepLabel = new Label(currentUser.getCep());
+
+        Label addressTitle = new Label("Endereço:");
+        Label addressLabel = new Label(currentUser.getAddress());
+
         TextField nameField = new TextField(currentUser.getName());
         nameField.setPromptText("Nome");
         nameField.getStyleClass().add("max-fit");
+        nameField.setEditable(false);
+        nameField.setVisible(false);
 
         TextField emailField = new TextField(currentUser.getEmail());
         emailField.setPromptText("Email");
         emailField.getStyleClass().add("max-fit");
-
-        nameField.setVisible(false);
         emailField.setVisible(false);
+
+        TextField passwordField = new PasswordField();
+        passwordField.setPromptText("Nova Senha (deixe em branco para não alterar)");
+        passwordField.getStyleClass().add("max-fit");
+        passwordField.setVisible(false);
+
+        TextField cellphoneField = new TextField(currentUser.getCellphone());
+        cellphoneField.setPromptText("Celular");
+        cellphoneField.getStyleClass().add("max-fit");
+        cellphoneField.setVisible(false);
+
+        TextField cepField = new TextField(currentUser.getCep());
+        cepField.setPromptText("CEP");
+        cepField.getStyleClass().add("max-fit");
+        cepField.setVisible(false);
+
+        TextField addressField = new TextField(currentUser.getAddress());
+        addressField.setPromptText("Endereço");
+        addressField.getStyleClass().add("max-fit");
+        addressField.setVisible(false);
 
         Label feedbackLabel = new Label();
         feedbackLabel.setVisible(false);
@@ -82,11 +114,19 @@ public class UserProfile {
 
         VBox nameBox = new VBox(2, nameTitle, nameLabel, nameField);
         VBox emailBox = new VBox(2, emailTitle, emailLabel, emailField);
+        VBox passwordBox = new VBox(2, passwordTitle, passwordMaskedLabel, passwordField);
+        VBox cellphoneBox = new VBox(2, cellphoneTitle, cellphoneLabel, cellphoneField);
+        VBox cepBox = new VBox(2, cepTitle, cepLabel, cepField);
+        VBox addressBox = new VBox(2, addressTitle, addressLabel, addressField);
 
         nameBox.setAlignment(Pos.CENTER);
         emailBox.setAlignment(Pos.CENTER);
+        passwordBox.setAlignment(Pos.CENTER);
+        cellphoneBox.setAlignment(Pos.CENTER);
+        cepBox.setAlignment(Pos.CENTER);
+        addressBox.setAlignment(Pos.CENTER);
 
-        VBox fieldsBox = new VBox(15, nameBox, emailBox);
+        VBox fieldsBox = new VBox(15, nameBox, emailBox, passwordBox, cellphoneBox, cepBox, addressBox);
         fieldsBox.setAlignment(Pos.CENTER);
 
         HBox buttonBox = new HBox(15, editButton, saveButton, cancelButton, deleteButton);
@@ -102,20 +142,45 @@ public class UserProfile {
 
         // Eventos
         editButton.setOnAction(e -> {
-            nameLabel.setVisible(false);
+            nameLabel.setVisible(true);
             emailLabel.setVisible(false);
-            nameField.setVisible(true);
+            passwordMaskedLabel.setVisible(false);
+            cellphoneLabel.setVisible(false);
+            cepLabel.setVisible(false);
+            addressLabel.setVisible(false);
+
+            nameField.setVisible(false);
             emailField.setVisible(true);
+            passwordField.setVisible(true);
+            cellphoneField.setVisible(true);
+            cepField.setVisible(true);
+            addressField.setVisible(true);
+
             editButton.setVisible(false);
             saveButton.setVisible(true);
             cancelButton.setVisible(true);
         });
 
         cancelButton.setOnAction(e -> {
-            nameField.setVisible(false);
+
+            emailField.setText(currentUser.getEmail());
+            passwordField.setText("");
+            cellphoneField.setText(currentUser.getCellphone());
+            cepField.setText(currentUser.getCep());
+            addressField.setText(currentUser.getAddress());
+
             emailField.setVisible(false);
-            nameLabel.setVisible(true);
+            passwordField.setVisible(false);
+            cellphoneField.setVisible(false);
+            cepField.setVisible(false);
+            addressField.setVisible(false);
+
             emailLabel.setVisible(true);
+            passwordMaskedLabel.setVisible(true);
+            cellphoneLabel.setVisible(true);
+            cepLabel.setVisible(true);
+            addressLabel.setVisible(true);
+
             editButton.setVisible(true);
             saveButton.setVisible(false);
             cancelButton.setVisible(false);
@@ -123,27 +188,64 @@ public class UserProfile {
         });
 
         saveButton.setOnAction(e -> {
-            if (nameField.getText().isEmpty() || emailField.getText().isEmpty()) {
-                feedbackLabel.setText("Nome e email são obrigatórios.");
+            String newEmail = emailField.getText();
+            String newPassword = passwordField.getText();
+            String newCellphone = cellphoneField.getText();
+            String newCep = cepField.getText();
+            String newAddress = addressField.getText();
+
+
+            if (newEmail.isEmpty()) {
+                feedbackLabel.setText("Email é obrigatório.");
                 feedbackLabel.getStyleClass().setAll("text-danger");
                 feedbackLabel.setVisible(true);
                 return;
             }
 
-            nameLabel.setText(nameField.getText());
-            emailLabel.setText(emailField.getText());
-            initialsLabel.setText(getInitials(nameField.getText()));
-            feedbackLabel.setText("Perfil atualizado com sucesso.");
-            feedbackLabel.getStyleClass().setAll("text-success");
-            feedbackLabel.setVisible(true);
+            try {
+                userService.updateUser(newEmail, newPassword,
+                        newCellphone, newCep, newAddress,
+                        currentUser.getId());
 
-            cancelButton.fire();
+                // Atualiza currentUser na memória para refletir as alterações
+                currentUser.setEmail(newEmail);
+                currentUser.setCellphone(newCellphone);
+                currentUser.setCep(newCep);
+                currentUser.setAddress(newAddress);
+
+                emailLabel.setText(newEmail);
+                cellphoneLabel.setText(newCellphone);
+                cepLabel.setText(newCep);
+                addressLabel.setText(newAddress);
+
+                feedbackLabel.setText("Perfil atualizado com sucesso.");
+                feedbackLabel.getStyleClass().setAll("text-success");
+                feedbackLabel.setVisible(true);
+
+                passwordField.setText("");
+
+                cancelButton.fire();
+            } catch (DomainException ex) {
+                feedbackLabel.setText("Erro ao atualizar perfil: " + ex.getMessage());
+                feedbackLabel.getStyleClass().setAll("text-danger");
+                feedbackLabel.setVisible(true);
+            } catch (RuntimeException ex) {
+                feedbackLabel.setText("Erro inesperado: " + ex.getMessage());
+                feedbackLabel.getStyleClass().setAll("text-danger");
+                feedbackLabel.setVisible(true);
+            }
         });
 
         deleteButton.setOnAction(e -> {
-            feedbackLabel.setText("Perfil excluído.");
-            feedbackLabel.getStyleClass().setAll("text-danger");
-            feedbackLabel.setVisible(true);
+            AlertUtils.showConfirmation("Tem certeza que deseja excluir sua conta? Esta ação é irreversível.", () -> {
+                try {
+                    userService.deleteUser(currentUser.getId());
+                    LoginAndRegister.loggedInUser = null;
+                    stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+                } catch (Exception ex) {
+                    AlertUtils.showError("Erro ao excluir usuário: " + ex.getMessage());
+                }
+            });
         });
 
         backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, cartProducts, currentUser).getView(stage)));

@@ -9,13 +9,13 @@ import java.util.List;
 public class User {
 
     private final int id;
-    private final String email;
+    private String email;
     private final String password;
-    private final String cellphone;
+    private String cellphone;
     private final String name;
     private final String cpf;
-    private final String cep;
-    private final String address;
+    private String cep;
+    private String address;
     private final Gender gender;
     private final Role role;
     private final List<Order> orders;
@@ -77,5 +77,13 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+    public void setEmail(String email) {this.email = email;}
+
+    public void setCep(String cep) {this.cep = cep;}
+
+    public void setCellphone(String cellphone) {this.cellphone = cellphone;}
+
+    public void setAddress(String address) {this.address = address;}
     
 }

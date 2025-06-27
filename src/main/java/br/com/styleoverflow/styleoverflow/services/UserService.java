@@ -62,7 +62,18 @@ public class UserService {
     }
 
     public void updateUser(String email, String password, String cellphone, String cep, String address, Integer userId) {
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        String hashedPassword;
+        if (password == null || password.trim().isEmpty()) {
+            User existingUser = getUserById(userId);
+            if (existingUser != null) {
+                hashedPassword = existingUser.getPassword();
+            } else {
+                throw new DomainException("Usuário não encontrado para atualização de senha.");
+            }
+        } else {
+            hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        }
+
         UpdateUserDTO userDto = new UpdateUserDTO(email, hashedPassword, cellphone, cep, address);
 
         try (Connection connection = factory.getConnection()) {
@@ -82,6 +93,17 @@ public class UserService {
         return new User(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
                         user.getCellphone(), user.getCpf(), user.getCep(), user.getAddress(),
                         user.getGender(), user.getRole(), orders);
+    }
+
+    public void deleteUser(Integer userId) {
+        try (Connection connection = factory.getConnection()) {
+            // Talvez terá que excluir pedidos, etc
+            new UserDAO(connection).deleteUser(userId);
+        } catch (DomainException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro inesperado ao excluir usuário: " + e.getMessage(), e);
+        }
     }
 
     public User getLoggedInUser() {

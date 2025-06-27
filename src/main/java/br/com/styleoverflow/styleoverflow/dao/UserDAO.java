@@ -124,4 +124,19 @@ public class UserDAO {
             throw new DomainException("erro interno ao atualizar usuário.");
         }
     }
+
+    public void deleteUser(int userId) {
+        String query = "DELETE FROM users WHERE id = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, userId);
+            statement.execute();
+
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            throw new DomainException("Erro interno ao excluir usuário.");
+        }
+    }
 }

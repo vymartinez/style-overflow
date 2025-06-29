@@ -8,11 +8,12 @@ import java.util.List;
 
 import br.com.styleoverflow.styleoverflow.DTO.ProductDTO;
 import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.interfaces.BaseDAO;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 
-public class ProductDAO {
+public class ProductDAO implements BaseDAO {
 
     private final Connection connection;
 
@@ -20,7 +21,9 @@ public class ProductDAO {
         this.connection = connection;
     }
 
-    public void createProduct(ProductDTO productDto) {
+    @Override
+    public void create(Record dto) {
+        if (!(dto instanceof ProductDTO productDto)) throw new RuntimeException("Erro interno. Tente novamente mais tarde.");
 
         String query = "INSERT INTO products (name, size, gender, photo_url, color, stock, price, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, false)";
 
@@ -43,7 +46,7 @@ public class ProductDAO {
         }
     }
 
-    public Product getProductById(int productId) {
+    public Product getById(int productId) {
 
         String query = "SELECT * FROM products WHERE id = ? AND deleted = false";
 
@@ -74,7 +77,7 @@ public class ProductDAO {
         return null;
     }
 
-    public List<Product> getAllProducts() {
+    public List<Product> getAll() {
 
         String query = "SELECT * FROM products WHERE deleted = false";
         List<Product> products = new ArrayList<>();
@@ -107,7 +110,9 @@ public class ProductDAO {
         return products;
     }
 
-    public void updateProduct(ProductDTO productDto, Integer productId) {
+    @Override
+    public void update(Record dto, Integer id) {
+        if (!(dto instanceof ProductDTO productDto)) throw new RuntimeException("Erro interno. Tente novamente mais tarde.");
 
         String query = "UPDATE products SET name = ?, size = ?, gender = ?, color = ?, stock = ?, price = ?, photo_url = ? WHERE id = ?";
 
@@ -120,7 +125,7 @@ public class ProductDAO {
             statement.setInt(5, productDto.stock());
             statement.setDouble(6, productDto.price());
             statement.setString(7, productDto.photoUrl());
-            statement.setInt(8, productId);
+            statement.setInt(8, id);
             statement.execute();
 
             statement.close();
@@ -131,7 +136,7 @@ public class ProductDAO {
         }
     }
 
-    public void deleteProduct(Integer productId) {
+    public void delete(Integer productId) {
 
         String query = "UPDATE products SET deleted = true WHERE id = ?";
 

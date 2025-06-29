@@ -38,7 +38,7 @@ public class ProductEdit {
 
         if (user == null || user.getRole() != Role.ADMIN) {
             AlertUtils.showError("Acesso Negado. Você não tem permissão para editar produtos.");
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
 
@@ -132,7 +132,8 @@ public class ProductEdit {
                     Integer.parseInt(stockField.getText()),
                     Double.parseDouble(priceField.getText()),
                     photoUrlField.getText(),
-                    product.getId()
+                    product.getId(),
+                        user
                 );
 
                 stage.getScene().setRoot(new AdminDashboard(user).getView(stage));

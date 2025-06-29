@@ -17,7 +17,7 @@ public enum Payment {
             case PIX:
                 return "Pix";
             case CARD:
-                return "Card";
+                return "Cartão";
             default:
                 return "";
         }

@@ -9,6 +9,7 @@ import java.util.*;
 import br.com.styleoverflow.styleoverflow.DTO.CreateOrderDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateOrderDTO;
 import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.interfaces.BaseDAO;
 import br.com.styleoverflow.styleoverflow.classes.Order;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.classes.ProductOrder;
@@ -17,7 +18,7 @@ import br.com.styleoverflow.styleoverflow.enums.Payment;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.enums.Status;
 
-public class OrderDAO {
+public class OrderDAO implements BaseDAO {
 
     private final Connection connection;
 
@@ -25,7 +26,9 @@ public class OrderDAO {
         this.connection = connection;
     }
 
-    public void createOrder(CreateOrderDTO orderDto) {
+    @Override
+    public void create(Record dto) {
+        if (!(dto instanceof CreateOrderDTO orderDto)) throw new RuntimeException("Erro interno. Tente novamente mais tarde.");
 
         String query = "INSERT INTO orders (client_id, date, status, payment_type) VALUES (?, ?, ?, ?)";
         String midQuery = "INSERT INTO product_orders (order_id, product_id, quantity) VALUES (?, ?, ?)";
@@ -71,7 +74,7 @@ public class OrderDAO {
         }
     }
 
-    public List<Order> getOrdersByCustomerId(Integer userId) {
+    public List<Order> getAllByCustomerId(Integer userId) {
 
         String query = (
             "SELECT o.id AS order_id, o.client_id, o.date, o.status, o.payment_type, " +
@@ -148,14 +151,16 @@ public class OrderDAO {
         }
     }
 
-    public void updateOrder(UpdateOrderDTO orderDto, Integer orderId) {
+    @Override
+    public void update(Record dto, Integer id) {
+        if (!(dto instanceof UpdateOrderDTO orderDto)) throw new RuntimeException("Erro interno. Tente novamente mais tarde.");
 
-        String query = "UPDATE orders SET status = ? WHERE order_id = ?";
+        String query = "UPDATE orders SET status = ? WHERE id = ?";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, orderDto.status().toString());
-            statement.setInt(2, orderId);
+            statement.setInt(2, id);
             statement.execute();
 
             statement.close();

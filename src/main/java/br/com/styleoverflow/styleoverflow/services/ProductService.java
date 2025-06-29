@@ -20,43 +20,43 @@ public class ProductService {
 
         ProductDTO productDTO = validateProductData(new ProductDTO(name, size, price, gender, color, stock, photoUrl));
 
-        new ProductDAO(connection).createProduct(productDTO);
+        new ProductDAO(connection).create(productDTO);
     }
 
     public static List<Product> getAllProducts() {
         Connection connection = factory.getConnection();
 
-        return new ProductDAO(connection).getAllProducts();
+        return new ProductDAO(connection).getAll();
     }
 
     public static Product getProductById(int productId) {
         Connection connection = factory.getConnection();
 
-        return new ProductDAO(connection).getProductById(productId);
+        return new ProductDAO(connection).getById(productId);
     }
 
     public void updateProduct(String name, Size size, Gender gender, String color, Integer stock, Double price, String photoUrl, Integer productId) {
         Connection connection = factory.getConnection();
 
-        Product product = new ProductDAO(connection).getProductById(productId);
+        Product product = new ProductDAO(connection).getById(productId);
         if (product == null) throw new DomainException("O produto não existe.");
 
         ProductDTO productDto = validateProductData(new ProductDTO(name, size, price, gender, color, stock, photoUrl));
 
         connection = factory.getConnection();
-        new ProductDAO(connection).updateProduct(productDto, productId);
+        new ProductDAO(connection).update(productDto, productId);
 
     }
 
     public void deleteProduct(Integer productId) {
         Connection connection = factory.getConnection();
 
-        Product product = new ProductDAO(connection).getProductById(productId);
+        Product product = new ProductDAO(connection).getById(productId);
 
         if (product == null) throw new DomainException("O produto não existe.");
 
         connection = factory.getConnection();
-        new ProductDAO(connection).deleteProduct(productId);
+        new ProductDAO(connection).delete(productId);
     }
 
     private ProductDTO validateProductData(ProductDTO productDto) {

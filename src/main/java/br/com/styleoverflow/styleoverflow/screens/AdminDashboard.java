@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AdminDashboard {
+public class AdminDashboard extends Dashboard {
 
     private final AdminService adminService = new AdminService(new ProductService());
     private final List<Product> allProducts = ProductService.getAllProducts();
@@ -36,6 +36,7 @@ public class AdminDashboard {
 
     public AdminDashboard(User user) {this.user = user;}
 
+    @Override
     public BorderPane getView(Stage stage) {
 
         if (user == null || !user.getRole().equals(Role.ADMIN)) {
@@ -71,8 +72,7 @@ public class AdminDashboard {
         Button logoutButton = new Button("Logout");
         logoutButton.getStyleClass().add("btn-primary");
         logoutButton.setOnAction(e -> {
-            LoginAndRegister.loggedInUser = null;
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
         });
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -150,7 +150,7 @@ public class AdminDashboard {
                         boolean confirmation = ConfirmationModal.confirmDelete(product.getName());
 
                         if (confirmation) {
-                            adminService.deleteProduct(product.getId());
+                            adminService.deleteProduct(product.getId(), user);
                             getTableView().getItems().remove(product);
                         }
 

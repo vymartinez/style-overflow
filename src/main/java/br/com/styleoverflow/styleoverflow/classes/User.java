@@ -9,16 +9,17 @@ import java.util.List;
 public class User {
 
     private final int id;
-    private String email;
+    private final String email;
     private final String password;
-    private String cellphone;
+    private final String cellphone;
     private final String name;
     private final String cpf;
-    private String cep;
-    private String address;
+    private final String cep;
+    private final String address;
     private final Gender gender;
     private final Role role;
     private final List<Order> orders;
+    private Cart currentCart = new Cart(new ArrayList<>());
 
     public User(int id, String name, String email, String password, String cellphone, String cpf, String cep, String address, Gender gender, Role role, List<Order> orders) {
         this.id = id;
@@ -78,12 +79,7 @@ public class User {
         return password;
     }
 
-    public void setEmail(String email) {this.email = email;}
-
-    public void setCep(String cep) {this.cep = cep;}
-
-    public void setCellphone(String cellphone) {this.cellphone = cellphone;}
-
-    public void setAddress(String address) {this.address = address;}
-    
+    public Cart getCurrentCart() {
+        return currentCart;
+    }
 }

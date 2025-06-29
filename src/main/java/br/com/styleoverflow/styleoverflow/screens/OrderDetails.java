@@ -1,9 +1,6 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.classes.CartProduct;
-import br.com.styleoverflow.styleoverflow.classes.Order;
-import br.com.styleoverflow.styleoverflow.classes.ProductOrder;
-import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.classes.*;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,10 +16,19 @@ import javafx.stage.Stage;
 import java.util.List;
 
 public class OrderDetails {
-    public static Parent getView(Stage stage, Order order, User user, List<CartProduct> cartProducts) {
+
+    private final User user;
+    private final Order order;
+
+    public OrderDetails(Order order, User user) {
+        this.user = user;
+        this.order = order;
+    }
+
+    public Parent getView(Stage stage) {
         if (user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver os detalhes do pedido.");
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
 
@@ -40,8 +46,8 @@ public class OrderDetails {
         infoBox.getStyleClass().add("product-card");
 
         Label dateLabel = new Label("Data do Pedido: " + order.getDate());
-        Label statusLabel = new Label("Status: " + order.getStatus());
-        Label paymentLabel = new Label("Forma de Pagamento: " + order.getPaymentType());
+        Label statusLabel = new Label("Status: " + order.getStatus().toPortgueseString());
+        Label paymentLabel = new Label("Forma de Pagamento: " + order.getPaymentType().toPortgueseString());
         Label totalLabel = new Label("Total: R$ " + String.format("%.2f", order.calculateTotal()));
 
         Label productsTitle = new Label("Itens do pedido:");
@@ -65,8 +71,8 @@ public class OrderDetails {
         Button backButton = new Button("Voltar");
         backButton.getStyleClass().add("btn-primary");
         backButton.setOnAction(e -> {
-            OrderHistory orderHistory = new OrderHistory(cartProducts);
-            stage.getScene().setRoot(orderHistory.getView(stage, user));
+            OrderHistory orderHistory = new OrderHistory(user);
+            stage.getScene().setRoot(orderHistory.getView(stage));
         });
 
         infoBox.getChildren().addAll(dateLabel, statusLabel, paymentLabel, totalLabel, productsTitle, scrollPane);
@@ -89,18 +95,9 @@ public class OrderDetails {
                     100, 100, true, true, true
             );
 
-            if (productImage.isError()) throw new Exception("Erro ao carregar imagem");
-
             imageView.setImage(productImage);
         } catch (Exception e) {
-            try {
-                imageView.setImage(new Image(
-                        OrderDetails.class.getResourceAsStream("/images/default-product.png"),
-                        100, 100, true, true
-                ));
-            } catch (Exception ex) {
-                imageView.setStyle("-fx-background-color: #192841; -fx-min-width: 100px; -fx-min-height: 100px;");
-            }
+            e.printStackTrace();
         }
         imageView.setPreserveRatio(true);
 

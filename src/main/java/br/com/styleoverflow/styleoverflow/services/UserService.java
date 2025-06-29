@@ -12,7 +12,6 @@ import br.com.styleoverflow.styleoverflow.classes.Order;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.dao.UserDAO;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
-import br.com.styleoverflow.styleoverflow.screens.LoginAndRegister;
 
 public class UserService {
 
@@ -24,41 +23,26 @@ public class UserService {
         CreateUserDTO userDTO = new CreateUserDTO(name, email, hashedPassword, cellphone, cpf, cep, address, gender);
 
         Connection connection = factory.getConnection();
-        new UserDAO(connection).createUser(userDTO);
-
+        new UserDAO(connection).create(userDTO);
     }
 
     public User login(String email, String plainTextPassword) {
-        User user = null;
-        try (Connection connection = factory.getConnection()) {
-            UserDAO userDAO = new UserDAO(connection);
-            user = userDAO.getUserByEmail(email); 
-            
-            if (user != null) {
-                if (BCrypt.checkpw(plainTextPassword, user.getPassword())) {
-                    return user;
-                }
-            }
-        } catch (DomainException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("erro inesperado ao tentar fazer login: " + e.getMessage(), e);
-        }
-        return null;
+        Connection connection = factory.getConnection();
+
+        User user = new UserDAO(connection).getByEmail(email);
+
+        if (user == null) throw new DomainException("Email ou senha inválidos");
+
+        boolean valid = BCrypt.checkpw(plainTextPassword, user.getPassword());
+        if (!valid) throw new DomainException("Email ou senha inválidos");
+
+        return getUserWithOrders(user);
     }
 
     public User getUserById(int userId) {
-        User user = null;
+        Connection connection = factory.getConnection();
 
-        try (Connection connection = factory.getConnection()) {
-            UserDAO userDAO = new UserDAO(connection);
-            user = userDAO.getUserById(userId);
-        } catch (DomainException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("erro inesperado ao buscar usuário por ID: " + e.getMessage(), e);
-        }
-        return user;
+        return getUserWithOrders(new UserDAO(connection).getById(userId));
     }
 
     public void updateUser(String email, String password, String cellphone, String cep, String address, Integer userId) {
@@ -76,19 +60,13 @@ public class UserService {
 
         UpdateUserDTO userDto = new UpdateUserDTO(email, hashedPassword, cellphone, cep, address);
 
-        try (Connection connection = factory.getConnection()) {
-            new UserDAO(connection).updateUser(userDto, userId);
-        } catch (DomainException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("erro inesperado ao atualizar usuário: " + e.getMessage(), e);
-        }
+        Connection connection = factory.getConnection();
+        new UserDAO(connection).update(userDto, userId);
     }
 
     private User getUserWithOrders(User user) { 
-        if (user == null) {
-            return null;
-        }
+        if (user == null) return null;
+
         List<Order> orders = orderService.getOrdersByCustomerId(user.getId());
         return new User(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
                         user.getCellphone(), user.getCpf(), user.getCep(), user.getAddress(),
@@ -96,18 +74,8 @@ public class UserService {
     }
 
     public void deleteUser(Integer userId) {
-        try (Connection connection = factory.getConnection()) {
-            // Talvez terá que excluir pedidos, etc
-            new UserDAO(connection).deleteUser(userId);
-        } catch (DomainException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Erro inesperado ao excluir usuário: " + e.getMessage(), e);
-        }
-    }
+        Connection connection = factory.getConnection();
 
-    public User getLoggedInUser() {
-        User user = null;
-        return LoginAndRegister.loggedInUser;
+        new UserDAO(connection).deleteUser(userId);
     }
 }

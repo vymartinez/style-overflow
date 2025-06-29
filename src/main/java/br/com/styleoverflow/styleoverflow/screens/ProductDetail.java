@@ -16,11 +16,19 @@ import java.util.List;
 
 public class ProductDetail {
 
-    public static Parent showProduct(Stage stage, Product product, List<CartProduct> cartProducts, User user) {
+    private User user;
+    private Product product;
 
-        if (user == null) {
+    public ProductDetail(Product product, User user) {
+        this.user = user;
+        this.product = product;
+    }
+
+    public Parent showProduct(Stage stage) {
+
+        if (this.user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver os detalhes do produto.");
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
 
@@ -67,7 +75,7 @@ public class ProductDetail {
             root.getChildren().add(content);
 
             voltarButton.setOnAction(e -> {
-                stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
+                stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
             });
         } catch (Exception e) {
             e.printStackTrace();

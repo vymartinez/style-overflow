@@ -18,14 +18,18 @@ import java.util.List;
 
 
 public class UserProfile {
-    private static final UserService userService = new UserService();
+    private final UserService userService = new UserService();
+    private final User currentUser;
 
-    public static Parent showProfile(Stage stage, List<CartProduct> cartProducts, User user) {
-        User currentUser = userService.getLoggedInUser();
+    public UserProfile(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public Parent showProfile(Stage stage) {
 
         if (currentUser == null) {
             AlertUtils.showError("Nenhum usuário logado. Por favor, faça login.");
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
 
@@ -126,16 +130,16 @@ public class UserProfile {
         cepBox.setAlignment(Pos.CENTER);
         addressBox.setAlignment(Pos.CENTER);
 
-        VBox fieldsBox = new VBox(15, nameBox, emailBox, passwordBox, cellphoneBox, cepBox, addressBox);
+        VBox fieldsBox = new VBox(5, nameBox, emailBox, passwordBox, cellphoneBox, cepBox, addressBox);
         fieldsBox.setAlignment(Pos.CENTER);
 
-        HBox buttonBox = new HBox(15, editButton, saveButton, cancelButton, deleteButton);
+        VBox buttonBox = new VBox(5, saveButton, cancelButton, editButton, deleteButton, backButton, historyButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        HBox navButtons = new HBox(15, backButton, historyButton);
-        navButtons.setAlignment(Pos.CENTER);
+        HBox hbx = new HBox(50, fieldsBox, buttonBox);
+        hbx.setAlignment(Pos.CENTER);
 
-        VBox content = new VBox(30, title, avatarPane, fieldsBox, feedbackLabel, buttonBox, navButtons);
+        VBox content = new VBox(15, title, avatarPane, hbx, feedbackLabel);
         content.setAlignment(Pos.TOP_CENTER);
 
         root.getChildren().add(content);
@@ -207,24 +211,7 @@ public class UserProfile {
                         newCellphone, newCep, newAddress,
                         currentUser.getId());
 
-                // Atualiza currentUser na memória para refletir as alterações
-                currentUser.setEmail(newEmail);
-                currentUser.setCellphone(newCellphone);
-                currentUser.setCep(newCep);
-                currentUser.setAddress(newAddress);
-
-                emailLabel.setText(newEmail);
-                cellphoneLabel.setText(newCellphone);
-                cepLabel.setText(newCep);
-                addressLabel.setText(newAddress);
-
-                feedbackLabel.setText("Perfil atualizado com sucesso.");
-                feedbackLabel.getStyleClass().setAll("text-success");
-                feedbackLabel.setVisible(true);
-
-                passwordField.setText("");
-
-                cancelButton.fire();
+                stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             } catch (DomainException ex) {
                 feedbackLabel.setText("Erro ao atualizar perfil: " + ex.getMessage());
                 feedbackLabel.getStyleClass().setAll("text-danger");
@@ -240,18 +227,17 @@ public class UserProfile {
             AlertUtils.showConfirmation("Tem certeza que deseja excluir sua conta? Esta ação é irreversível.", () -> {
                 try {
                     userService.deleteUser(currentUser.getId());
-                    LoginAndRegister.loggedInUser = null;
-                    stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+                    stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
                 } catch (Exception ex) {
                     AlertUtils.showError("Erro ao excluir usuário: " + ex.getMessage());
                 }
             });
         });
 
-        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, cartProducts, currentUser).getView(stage)));
+        backButton.setOnAction(e -> stage.getScene().setRoot(new CatalogView(stage, currentUser).getView(stage)));
 
         historyButton.setOnAction(e -> {
-            Parent historyView = new OrderHistory(cartProducts).getView(stage, currentUser);
+            Parent historyView = new OrderHistory(currentUser).getView(stage);
             stage.getScene().setRoot(historyView);
         });
 

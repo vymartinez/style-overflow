@@ -1,33 +1,32 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import br.com.styleoverflow.styleoverflow.DomainException;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
 import br.com.styleoverflow.styleoverflow.services.UserService;
-
-import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import java.util.ArrayList;
-import java.util.List;
-import br.com.styleoverflow.styleoverflow.classes.CartProduct;
-
-import java.util.Arrays;
 
 public class LoginAndRegister {
 
-    private static final UserService userService = new UserService();
+    private final UserService userService = new UserService();
 
-    public static User loggedInUser = null;
-
-    public static Parent showLogin(Stage stage) {
-        List<CartProduct> cartProducts = new ArrayList<>();
+    public Parent showLogin(Stage stage) {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(15);
@@ -63,20 +62,12 @@ public class LoginAndRegister {
             try {
                 User user = userService.login(email, password); // Chama o serviço de login
 
-                if (user != null) {
-                    loggedInUser = user; // Armazena o usuário logado
-                    feedback.setText("Login realizado com sucesso! Bem-vindo, " + user.getName() + "!");
-                    feedback.getStyleClass().setAll("text-success");
+                feedback.setText("Login realizado com sucesso! Bem-vindo, " + user.getName() + "!");
+                feedback.getStyleClass().setAll("text-success");
 
-                    if (user.getRole() == Role.ADMIN) {
-                        stage.getScene().setRoot(new AdminDashboard(loggedInUser).getView(stage));
-                    } else { // Role.CLIENT
-                        stage.getScene().setRoot(new CatalogView(stage, cartProducts, loggedInUser).getView(stage)); // Assume que CatalogView é a tela do cliente
-                    }
-                } else {
-                    feedback.setText("Email ou senha inválidos.");
-                    feedback.getStyleClass().setAll("text-danger");
-                }
+                if (user.getRole() == Role.ADMIN) stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
+                else stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
+
             } catch (DomainException ex) {
                 feedback.setText("Erro: " + ex.getMessage());
                 feedback.getStyleClass().setAll("text-danger");
@@ -95,7 +86,7 @@ public class LoginAndRegister {
         return root;
     }
 
-    public static Parent showRegister(Stage stage) {
+    public Parent showRegister(Stage stage) {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         root.setSpacing(15);
@@ -167,7 +158,7 @@ public class LoginAndRegister {
                 userService.createUser(name, email, password, cellphone, cpf, cep, address, gender);
 
                 feedback.setText("Conta criada com sucesso! Você já pode fazer login.");
-                feedback.getStyleClass().setAll("text-success");
+                feedback.getStyleClass().add("text-success");
 
                 // Limpar campos após o sucesso
                 nameField.clear();

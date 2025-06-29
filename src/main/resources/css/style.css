@@ -35,6 +35,12 @@
     -fx-fill-width: 100%;
 }
 
+.text-success {
+    -fx-text-fill: #00ffcc;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
 .text-primary {
     -fx-text-fill: #00ffcc !important;
     -fx-font-size: 40px;
@@ -173,4 +179,13 @@
 .spinner .increment-arrow-button .increment-arrow,
 .spinner .decrement-arrow-button .decrement-arrow {
     -fx-padding: 2px;
+}
+
+.qr {
+    -fx-background-image: url("qr.png");
+    -fx-background-size: 200 200;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 200px;
 }

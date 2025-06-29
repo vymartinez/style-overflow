@@ -15,16 +15,25 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OrderConfirmation {
 
-    public static Parent showConfirmation(Stage stage, ObservableList<CartProduct> cartProducts, User user) {
+    private final User user;
+    OrderService orderService = new OrderService(new ConnectionFactory());
+
+    public OrderConfirmation(User user) {
+        this.user = user;
+    }
+
+    public Parent showConfirmation(Stage stage) {
 
         if (user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
 
@@ -63,7 +72,7 @@ public class OrderConfirmation {
 
         double total = 0;
 
-        for (CartProduct cartProduct : cartProducts) {
+        for (CartProduct cartProduct : user.getCurrentCart().getProducts()) {
             double subtotal = cartProduct.getSubtotal();
             total += subtotal;
 
@@ -93,10 +102,23 @@ public class OrderConfirmation {
         productList.setAlignment(Pos.CENTER);
         productList.setFillWidth(true);
 
-        ComboBox<Payment> pagamentoBox = new ComboBox<>();
-        pagamentoBox.getItems().addAll(Payment.values());
-        pagamentoBox.setValue(Payment.CARD);
+        HBox qrBox = new HBox();
+        qrBox.setAlignment(Pos.CENTER);
+
+        ComboBox<String> pagamentoBox = new ComboBox<>();
+        pagamentoBox.getItems().addAll(Arrays.stream(Payment.values()).map(Payment::toPortgueseString).toList());
+        pagamentoBox.setValue(Payment.CARD.toPortgueseString());
         pagamentoBox.getStyleClass().add("combobox");
+        pagamentoBox.setOnAction(event -> {
+            String selectedPayment = pagamentoBox.getValue();
+            if (selectedPayment.equals("Pix")) {
+                qrBox.setVisible(true);
+                qrBox.getStyleClass().add("qr");
+            } else {
+                qrBox.getStyleClass().remove("qr");
+                qrBox.setVisible(false);
+            }
+        });
 
         Label totalLabel = new Label("Total: R$ " + String.format("%.2f", total));
         totalLabel.getStyleClass().add("label");
@@ -108,22 +130,21 @@ public class OrderConfirmation {
         voltarButton.getStyleClass().add("btn-primary");
 
         voltarButton.setOnAction(e -> {
-            stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
+            stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
         });
 
         confirmarButton.setOnAction(e -> {
-            Payment metodo = pagamentoBox.getValue();
+            Payment metodo = pagamentoBox.getValue().equals("Pix") ? Payment.PIX : Payment.CARD;
 
             try {
-                OrderService orderService = new OrderService(new ConnectionFactory());
-                orderService.createOrder(user.getId(), metodo, new ArrayList<>(cartProducts));
-                cartProducts.clear();
+                orderService.createOrder(user.getId(), metodo, new ArrayList<>(user.getCurrentCart().getProducts()));
+                user.getCurrentCart().clear();
 
                 // Mensagem de sucesso
                 //AlertUtils.showInfo("Pedido realizado com sucesso!");
 
                 // Redirecionar (para o catálogo ou tela de pedidos)
-                stage.getScene().setRoot(new CatalogView(stage, cartProducts, user).getView(stage));
+                stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
             } catch (Exception ex) {
                 ex.printStackTrace();
                 AlertUtils.showError(ex.getMessage());
@@ -135,6 +156,7 @@ public class OrderConfirmation {
                 productList,
                 new Label("Método de Pagamento:"),
                 pagamentoBox,
+                qrBox,
                 totalLabel,
                 confirmarButton,
                 voltarButton

@@ -31,13 +31,13 @@ public class OrderService {
         cartItems.forEach(cartProduct -> {
             productOrderDTOList.add(new ProductOrderDTO(cartProduct.getProduct().getId(), cartProduct.getQuantity()));
         });
-        new OrderDAO(connection).createOrder(new CreateOrderDTO(userId, paymentType, productOrderDTOList));
+        new OrderDAO(connection).create(new CreateOrderDTO(userId, paymentType, productOrderDTOList));
     }
 
     public List<Order> getOrdersByCustomerId(Integer userId) {
         Connection connection = factory.getConnection();
 
-        return new OrderDAO(connection).getOrdersByCustomerId(userId);
+        return new OrderDAO(connection).getAllByCustomerId(userId);
     }
 
     public void updateOrder(Status status, Integer orderId) {
@@ -45,6 +45,6 @@ public class OrderService {
 
         // implementar tratamentos de erro
 
-        new OrderDAO(connection).updateOrder(new UpdateOrderDTO(status), orderId);
+        new OrderDAO(connection).update(new UpdateOrderDTO(status), orderId);
     }
 }

@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import br.com.styleoverflow.styleoverflow.DTO.CreateUserDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateUserDTO;
 import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.interfaces.BaseDAO;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
 
-public class UserDAO {
+public class UserDAO implements BaseDAO {
 
     private final Connection connection;
 
@@ -20,7 +21,9 @@ public class UserDAO {
         this.connection = connection;
     }
 
-    public void createUser(CreateUserDTO userDto) {
+    @Override
+    public void create(Record dto) {
+        if (!(dto instanceof CreateUserDTO userDto)) throw new RuntimeException("Erro interno. Tente novamente mais tarde.");
 
         String query = "INSERT INTO users (name, password, gender, address, email, role, cellphone, cep, cpf) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -45,7 +48,7 @@ public class UserDAO {
         }
     }
 
-    public User getUserById(Integer userId) {
+    public User getById(Integer userId) {
 
         String query = "SELECT * FROM users WHERE id = ?";
 
@@ -65,6 +68,10 @@ public class UserDAO {
                 String cep = resultSet.getString("cep");
                 String cpf = resultSet.getString("cpf");
 
+                statement.close();
+                resultSet.close();
+                connection.close();
+
                 return new User(id, name, email, password, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
             }
         } catch (Exception e) {
@@ -74,7 +81,7 @@ public class UserDAO {
         return null;
     }
 
-    public User getUserByEmail(String userEmail) {
+    public User getByEmail(String userEmail) {
 
         String query = "SELECT * FROM users WHERE email = ?";
 
@@ -94,6 +101,10 @@ public class UserDAO {
                 String cep = resultSet.getString("cep");
                 String cpf = resultSet.getString("cpf");
 
+                statement.close();
+                resultSet.close();
+                connection.close();
+
                 return new User(id, name, email, password, cellphone, cpf, cep, address, Gender.valueOf(gender), Role.valueOf(role), new ArrayList<>());
             }
         } catch (Exception e) {
@@ -104,7 +115,10 @@ public class UserDAO {
     }
 
 
-    public void updateUser(UpdateUserDTO userDto, Integer userId) {
+    @Override
+    public void update(Record dto, Integer id) {
+        if (!(dto instanceof UpdateUserDTO userDto)) throw new RuntimeException("Erro interno. Tente novamente mais tarde.");
+
         String query = "UPDATE users SET email = ?, password = ?, cellphone = ?, cep = ?, address = ? WHERE id = ?";
 
         try {
@@ -114,7 +128,7 @@ public class UserDAO {
             statement.setString(3, userDto.cellphone());
             statement.setString(4, userDto.cep());
             statement.setString(5, userDto.address());
-            statement.setInt(6, userId);
+            statement.setInt(6, id);
             statement.execute();
 
             statement.close();
@@ -135,6 +149,7 @@ public class UserDAO {
 
             statement.close();
             connection.close();
+
         } catch (Exception e) {
             throw new DomainException("Erro interno ao excluir usuário.");
         }

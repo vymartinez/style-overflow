@@ -19,31 +19,30 @@ import javafx.stage.Stage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CatalogView {
+public class CatalogView extends Dashboard {
     private final List<Product> allProducts = ProductService.getAllProducts();
     private final VBox catalogBox = new VBox(10);
     private final ComboBox<String> genderFilter = new ComboBox<>();
     private final ComboBox<Size> sizeFilter = new ComboBox<>();
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
-    private final List<CartProduct> cartProducts;
-    private User user;
+    private final User user;
     private final Label subtotalLabel;
 
-    public CatalogView(Stage stage, List<CartProduct> cartProducts, User currentUser) {
-        this.cartProducts = cartProducts;
+    public CatalogView(Stage stage, User currentUser) {
         this.subtotalLabel = new Label("Subtotal: R$ 0,00");
         subtotalLabel.setFont(new Font(14));
         clearFiltersButton.setOnAction(e -> limparFiltros(stage));
-       clearFiltersButton.setVisible(false);
+        clearFiltersButton.setVisible(false);
         this.user = currentUser;
     }
 
+    @Override
     public VBox getView(Stage stage) {
 
         if (user == null) {
             AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
-            stage.getScene().setRoot(LoginAndRegister.showLogin(stage));
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
 
@@ -62,12 +61,12 @@ public class CatalogView {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> updateCatalog(stage));
 
         Button btnCart = new Button("Ver Carrinho");
-        btnCart.setOnAction(e -> new CartView(cartProducts, user).showCart(stage));
+        btnCart.setOnAction(e -> new CartView(user).showCart(stage));
 
         Button btnProfile = new Button("Perfil");
-        btnProfile.setOnAction(e -> stage.getScene().setRoot(UserProfile.showProfile(stage, cartProducts, user)));
+        btnProfile.setOnAction(e -> stage.getScene().setRoot(new UserProfile(user).showProfile(stage)));
         Button logout = new Button("Logout");
-        logout.setOnAction(e -> stage.getScene().setRoot(LoginAndRegister.showLogin(stage)));
+        logout.setOnAction(e -> stage.getScene().setRoot(new LoginAndRegister().showLogin(stage)));
 
         btnCart.getStyleClass().add("btn-primary");
         btnProfile.getStyleClass().add("btn-primary");
@@ -96,9 +95,7 @@ public class CatalogView {
     }
 
     private void atualizarSubtotal() {
-        double subtotal = cartProducts.stream()
-                .mapToDouble(cp -> cp.getProduct().getPrice() * cp.getQuantity())
-                .sum();
+        double subtotal = user.getCurrentCart().calculateTotal();
         subtotalLabel.setText(String.format("Subtotal: R$ %.2f", subtotal));
     }
 
@@ -144,7 +141,7 @@ public class CatalogView {
 
             btnAddCart.setOnAction(e -> {
                 if (product.getStock() <= 0) {
-                    showAlert("Erro", "Produto sem estoque disponível.");
+                    AlertUtils.showAlert("Erro", "Produto sem estoque disponível.");
                     return;
                 }
 
@@ -153,18 +150,18 @@ public class CatalogView {
                 if (existingItem != null) {
                     if (existingItem.getQuantity() < product.getStock()) {
                         existingItem.setQuantity(existingItem.getQuantity() + 1);
-                        showAlert("Sucesso", "Quantidade do produto atualizada no carrinho!");
+                        AlertUtils.showAlert("Sucesso", "Quantidade do produto atualizada no carrinho!");
                     } else {
-                        showAlert("Aviso", "Quantidade máxima em estoque já adicionada ao carrinho.");
+                        AlertUtils.showAlert("Aviso", "Quantidade máxima em estoque já adicionada ao carrinho.");
                     }
                 } else {
-                    cartProducts.add(new CartProduct(product, 1));
-                    showAlert("Sucesso", "Produto adicionado ao carrinho!");
+                    user.getCurrentCart().addProduct(new CartProduct(product, 1));
+                    AlertUtils.showAlert("Sucesso", "Produto adicionado ao carrinho!");
                 }
                 atualizarSubtotal();
             });
 
-            seeDetails.setOnAction(e -> stage.getScene().setRoot(ProductDetail.showProduct(stage, product, cartProducts, user)));
+            seeDetails.setOnAction(e -> stage.getScene().setRoot(new ProductDetail(product, user).showProduct(stage)));
             HBox buttonBox = new HBox(10, btnAddCart, seeDetails);
             info.getChildren().addAll(nome, preco, estoque, buttonBox);
 
@@ -177,7 +174,7 @@ public class CatalogView {
     }
 
     private CartProduct findProductInCart(Product product) {
-        for (CartProduct cartItem : cartProducts) {
+        for (CartProduct cartItem : user.getCurrentCart().getProducts()) {
             Product p = cartItem.getProduct();
             if (p.getId().equals(product.getId()) &&
                     p.getName().equals(product.getName()) &&
@@ -187,14 +184,6 @@ public class CatalogView {
             }
         }
         return null;
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private void limparFiltros(Stage stage) {

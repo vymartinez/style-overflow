@@ -116,7 +116,8 @@ public class ProductRegister {
                     colorField.getText(),
                     Integer.parseInt(stockField.getText()),
                     Double.parseDouble(priceField.getText()),
-                    photoUrlField.getText()
+                    photoUrlField.getText(),
+                    user
                 );
 
                 stage.getScene().setRoot(new AdminDashboard(user).getView(stage));

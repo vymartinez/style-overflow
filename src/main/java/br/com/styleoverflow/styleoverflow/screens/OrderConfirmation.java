@@ -2,12 +2,9 @@ package br.com.styleoverflow.styleoverflow.screens;
 
 import br.com.styleoverflow.styleoverflow.ConnectionFactory;
 import br.com.styleoverflow.styleoverflow.classes.CartProduct;
-import br.com.styleoverflow.styleoverflow.classes.Product;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Payment;
 import br.com.styleoverflow.styleoverflow.services.OrderService;
-import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -15,10 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class OrderConfirmation {
 
@@ -32,7 +27,6 @@ public class OrderConfirmation {
     public Parent showConfirmation(Stage stage) {
 
         if (user == null) {
-            AlertUtils.showError("Acesso Negado. Você precisa estar logado para ver o carrinho.");
             stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             return new VBox();
         }
@@ -70,11 +64,11 @@ public class OrderConfirmation {
         headerRow.getChildren().addAll(headerName, headerUnit, headerQty, headerSub);
         productList.getChildren().add(headerRow);
 
-        double total = 0;
+        final double[] subtotalProdutos = {0.0};
 
         for (CartProduct cartProduct : user.getCurrentCart().getProducts()) {
             double subtotal = cartProduct.getSubtotal();
-            total += subtotal;
+            subtotalProdutos[0] += subtotal;
 
             HBox tableRow = new HBox(10);
             tableRow.setAlignment(Pos.CENTER_LEFT);
@@ -99,9 +93,43 @@ public class OrderConfirmation {
             productList.getChildren().add(tableRow);
         }
 
+        // Adicionar linha visual do frete
+        final double FRETE_FIXO = 24.99;
+
+        HBox freteRow = new HBox(10);
+        freteRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label freteNameLabel = new Label("Frete");
+        freteNameLabel.setMinWidth(200);
+        freteNameLabel.getStyleClass().add("label");
+
+        Label freteSizeLabel = new Label("-");
+        freteSizeLabel.setMinWidth(80);
+        freteSizeLabel.getStyleClass().add("label");
+
+        Label freteQtyLabel = new Label("-");
+        freteQtyLabel.setMinWidth(80);
+        freteQtyLabel.getStyleClass().add("label");
+
+        Label freteTotalLabel = new Label("R$ " + String.format("%.2f", FRETE_FIXO));
+        freteTotalLabel.setMinWidth(100);
+        freteTotalLabel.getStyleClass().add("label");
+
+        freteRow.getChildren().addAll(freteNameLabel, freteSizeLabel, freteQtyLabel, freteTotalLabel);
+        productList.getChildren().add(freteRow);
+
         productList.setAlignment(Pos.CENTER);
         productList.setFillWidth(true);
 
+        // Controle de total e descontos
+        final double[] totalFinal = {subtotalProdutos[0] + FRETE_FIXO};
+        final boolean[] descontoAplicado = {false};
+        final boolean[] freteGratisAplicado = {false};
+
+        Label totalLabel = new Label("Total: R$ " + String.format("%.2f", totalFinal[0]));
+        totalLabel.getStyleClass().add("label");
+
+        // QR Code (Pix)
         HBox qrBox = new HBox();
         qrBox.setAlignment(Pos.CENTER);
 
@@ -111,18 +139,62 @@ public class OrderConfirmation {
         pagamentoBox.getStyleClass().add("combobox");
         pagamentoBox.setOnAction(event -> {
             String selectedPayment = pagamentoBox.getValue();
-            if (selectedPayment.equals("Pix")) {
-                qrBox.setVisible(true);
-                qrBox.getStyleClass().add("qr");
+            qrBox.setVisible(selectedPayment.equals("Pix"));
+        });
+
+        // Cupom
+        HBox cupomBox = new HBox(10);
+        cupomBox.setAlignment(Pos.CENTER);
+
+        TextField cupomField = new TextField();
+        cupomField.setPromptText("Digite o cupom");
+        cupomField.setMaxWidth(200);
+
+        Button aplicarCupomButton = new Button("Aplicar Cupom");
+        aplicarCupomButton.getStyleClass().add("btn-primary");
+
+        Label feedbackLabel = new Label();
+        feedbackLabel.setStyle("-fx-text-fill: red;");
+
+        aplicarCupomButton.setOnAction(e -> {
+            String cupom = cupomField.getText().trim().toLowerCase();
+
+            if (cupom.equals("desconto15")) {
+                if (descontoAplicado[0]) {
+                    feedbackLabel.setText("Cupom 'desconto15' já aplicado.");
+                    feedbackLabel.setStyle("-fx-text-fill: orange;");
+                    return;
+                }
+
+                double desconto = subtotalProdutos[0] * 0.15;
+                totalFinal[0] -= desconto;
+                totalLabel.setText("Total: R$ " + String.format("%.2f", totalFinal[0]));
+                feedbackLabel.setText("Cupom 'desconto15' aplicado com sucesso!");
+                feedbackLabel.setStyle("-fx-text-fill: green;");
+                descontoAplicado[0] = true;
+
+            } else if (cupom.equals("fretegratis")) {
+                if (freteGratisAplicado[0]) {
+                    feedbackLabel.setText("Cupom 'fretegratis' já aplicado.");
+                    feedbackLabel.setStyle("-fx-text-fill: orange;");
+                    return;
+                }
+
+                totalFinal[0] -= FRETE_FIXO;
+                totalLabel.setText("Total: R$ " + String.format("%.2f", totalFinal[0]));
+                feedbackLabel.setText("Cupom 'fretegratis' aplicado com sucesso!");
+                feedbackLabel.setStyle("-fx-text-fill: green;");
+                freteGratisAplicado[0] = true;
+
             } else {
-                qrBox.getStyleClass().remove("qr");
-                qrBox.setVisible(false);
+                feedbackLabel.setText("Cupom inválido.");
+                feedbackLabel.setStyle("-fx-text-fill: red;");
             }
         });
 
-        Label totalLabel = new Label("Total: R$ " + String.format("%.2f", total));
-        totalLabel.getStyleClass().add("label");
+        cupomBox.getChildren().addAll(cupomField, aplicarCupomButton);
 
+        // Botões
         Button confirmarButton = new Button("Confirmar Pedido");
         confirmarButton.getStyleClass().add("btn-primary");
 
@@ -139,15 +211,11 @@ public class OrderConfirmation {
             try {
                 orderService.createOrder(user.getId(), metodo, new ArrayList<>(user.getCurrentCart().getProducts()));
                 user.getCurrentCart().clear();
-
-                // Mensagem de sucesso
-                //AlertUtils.showInfo("Pedido realizado com sucesso!");
-
-                // Redirecionar (para o catálogo ou tela de pedidos)
                 stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
             } catch (Exception ex) {
                 ex.printStackTrace();
-                AlertUtils.showError(ex.getMessage());
+                feedbackLabel.setText("Erro ao finalizar pedido: " + ex.getMessage());
+                feedbackLabel.setStyle("-fx-text-fill: red;");
             }
         });
 
@@ -157,6 +225,8 @@ public class OrderConfirmation {
                 new Label("Método de Pagamento:"),
                 pagamentoBox,
                 qrBox,
+                cupomBox,
+                feedbackLabel,
                 totalLabel,
                 confirmarButton,
                 voltarButton

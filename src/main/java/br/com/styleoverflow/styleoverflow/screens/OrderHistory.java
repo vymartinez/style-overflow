@@ -27,6 +27,7 @@ public class OrderHistory {
     public OrderHistory(User user) {
         this.user = user;
         this.orders = orderService.getOrdersByCustomerId(user.getId());
+        this.orders.sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()));
     }
 
     public Parent getView(Stage stage) {

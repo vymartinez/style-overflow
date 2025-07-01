@@ -2,6 +2,9 @@ package br.com.styleoverflow.styleoverflow.services;
 
 import java.sql.Connection;
 import java.util.List;
+
+import br.com.styleoverflow.styleoverflow.classes.Admin;
+import br.com.styleoverflow.styleoverflow.enums.Role;
 import org.mindrot.jbcrypt.BCrypt;
 
 import br.com.styleoverflow.styleoverflow.ConnectionFactory;
@@ -68,6 +71,13 @@ public class UserService {
         if (user == null) return null;
 
         List<Order> orders = orderService.getOrdersByCustomerId(user.getId());
+
+        if (user.getRole() == Role.ADMIN) return new Admin(
+                user.getId(), user.getName(), user.getEmail(), user.getPassword(),
+                user.getCellphone(), user.getCpf(), user.getCep(), user.getAddress(),
+                user.getGender(), user.getRole(), orders
+        );
+
         return new User(user.getId(), user.getName(), user.getEmail(), user.getPassword(),
                         user.getCellphone(), user.getCpf(), user.getCep(), user.getAddress(),
                         user.getGender(), user.getRole(), orders);

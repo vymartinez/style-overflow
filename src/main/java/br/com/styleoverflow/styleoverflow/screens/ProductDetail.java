@@ -56,6 +56,7 @@ public class ProductDetail {
             Label sizeLabel = new Label("Tamanho: " + product.getSize().toString());
             Label stockLabel = new Label("Em estoque: " + product.getStock().toString());
             Label precoLabel = new Label("Preço: R$ " + String.format("%.2f", product.getPrice()));
+            Label colorLabel = new Label("Cor: " + product.getColor());
 
             Button voltarButton = new Button("Voltar");
             voltarButton.getStyleClass().add("btn-primary");
@@ -64,6 +65,7 @@ public class ProductDetail {
                     title,
                     productImage,
                     nomeLabel,
+                    colorLabel,
                     sizeLabel,
                     stockLabel,
                     precoLabel,

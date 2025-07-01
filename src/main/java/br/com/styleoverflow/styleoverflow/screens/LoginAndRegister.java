@@ -77,7 +77,8 @@ public class LoginAndRegister {
                 feedback.getStyleClass().setAll("text-danger");
                 ex.printStackTrace();
             } catch (RuntimeException ex) {
-                feedback.setText("Erro interno do sistema.");
+                System.out.println(ex.getMessage());
+                feedback.setText(ex.getMessage());
                 feedback.getStyleClass().setAll("text-danger");
                 ex.printStackTrace();
             }

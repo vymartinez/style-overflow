@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import br.com.styleoverflow.styleoverflow.DTO.CreateUserDTO;
 import br.com.styleoverflow.styleoverflow.DTO.UpdateUserDTO;
 import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.classes.Admin;
 import br.com.styleoverflow.styleoverflow.interfaces.BaseDAO;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;

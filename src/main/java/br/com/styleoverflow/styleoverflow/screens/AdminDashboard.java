@@ -1,11 +1,10 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
+import br.com.styleoverflow.styleoverflow.classes.Admin;
 import br.com.styleoverflow.styleoverflow.classes.Product;
-import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
 import br.com.styleoverflow.styleoverflow.enums.Role;
-import br.com.styleoverflow.styleoverflow.services.AdminService;
 import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import br.com.styleoverflow.styleoverflow.utils.ConfirmationModal;
@@ -23,20 +22,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AdminDashboard extends Dashboard {
+public class AdminDashboard {
 
-    private final AdminService adminService = new AdminService(new ProductService());
     private final List<Product> allProducts = ProductService.getAllProducts();
     private final ComboBox<String> genderFilter = new ComboBox<>();
     private final ComboBox<Size> sizeFilter = new ComboBox<>();
     private final TextField searchField = new TextField();
     private final Button clearFiltersButton = new Button("Limpar Filtros");
     private final TableView<Product> table = new TableView<>();
-    private User user;
+    private final Admin user;
 
-    public AdminDashboard(User user) {this.user = user;}
+    public AdminDashboard(Admin user) {this.user = user;}
 
-    @Override
     public BorderPane getView(Stage stage) {
 
         if (user == null || !user.getRole().equals(Role.ADMIN)) {
@@ -72,7 +69,7 @@ public class AdminDashboard extends Dashboard {
         Button logoutButton = new Button("Logout");
         logoutButton.getStyleClass().add("btn-primary");
         logoutButton.setOnAction(e -> {
-            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
+            user.logout(stage);
         });
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -150,7 +147,7 @@ public class AdminDashboard extends Dashboard {
                         boolean confirmation = ConfirmationModal.confirmDelete(product.getName());
 
                         if (confirmation) {
-                            adminService.deleteProduct(product.getId(), user);
+                            user.deleteProduct(product.getId());
                             getTableView().getItems().remove(product);
                         }
 

@@ -1,11 +1,9 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.classes.Admin;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
 import br.com.styleoverflow.styleoverflow.enums.Size;
-import br.com.styleoverflow.styleoverflow.services.AdminService;
-import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import br.com.styleoverflow.styleoverflow.utils.WebpToPngConverter;
 import br.com.styleoverflow.styleoverflow.classes.Product;
@@ -25,11 +23,10 @@ import java.util.Arrays;
 
 public class ProductEdit {
 
-    private final AdminService adminService = new AdminService(new ProductService());
     private final Product product;
-    private User user;
+    private final Admin user;
 
-    public ProductEdit(Product product, User user) {
+    public ProductEdit(Product product, Admin user) {
         this.product = product;
         this.user = user;
     }
@@ -124,7 +121,7 @@ public class ProductEdit {
 
         saveButton.setOnAction(e -> {
             try {
-                adminService.patchProduct(
+                user.patchProduct(
                     nameField.getText(),
                     sizeField.getValue(),
                     genderField.getValue().equals("Masculino") ? Gender.MALE : Gender.FEMALE,
@@ -132,8 +129,7 @@ public class ProductEdit {
                     Integer.parseInt(stockField.getText()),
                     Double.parseDouble(priceField.getText()),
                     photoUrlField.getText(),
-                    product.getId(),
-                        user
+                    product.getId()
                 );
 
                 stage.getScene().setRoot(new AdminDashboard(user).getView(stage));

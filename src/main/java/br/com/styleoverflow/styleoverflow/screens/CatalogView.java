@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CatalogView extends Dashboard {
+public class CatalogView {
     private final List<Product> allProducts = ProductService.getAllProducts();
     private final VBox catalogBox = new VBox(10);
     private final ComboBox<String> genderFilter = new ComboBox<>();
@@ -37,7 +37,6 @@ public class CatalogView extends Dashboard {
         this.user = currentUser;
     }
 
-    @Override
     public VBox getView(Stage stage) {
 
         if (user == null) {
@@ -66,7 +65,7 @@ public class CatalogView extends Dashboard {
         Button btnProfile = new Button("Perfil");
         btnProfile.setOnAction(e -> stage.getScene().setRoot(new UserProfile(user).showProfile(stage)));
         Button logout = new Button("Logout");
-        logout.setOnAction(e -> stage.getScene().setRoot(new LoginAndRegister().showLogin(stage)));
+        logout.setOnAction(e -> user.logout(stage));
 
         btnCart.getStyleClass().add("btn-primary");
         btnProfile.getStyleClass().add("btn-primary");

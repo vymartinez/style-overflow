@@ -21,7 +21,7 @@ import java.util.List;
 public class OrderHistory {
 
     private final User user;
-    private final OrderService orderService = new OrderService(new ConnectionFactory());
+    private final OrderService orderService = new OrderService();
     private final List<Order> orders;
 
     public OrderHistory(User user) {
@@ -78,7 +78,7 @@ public class OrderHistory {
                     markDeliveredButton.getStyleClass().add("btn-primary-danger");
                     markDeliveredButton.setOnAction(e -> {
                         try {
-                            orderService.updateOrder(Status.DELIVERED, order.getId());
+                            user.patchOrderStatus(order, Status.DELIVERED);
 
                             AlertUtils.showAlert("Sucesso", "Pedido marcado como entregue com sucesso.");
                             stage.getScene().setRoot(new UserProfile(user).showProfile(stage));

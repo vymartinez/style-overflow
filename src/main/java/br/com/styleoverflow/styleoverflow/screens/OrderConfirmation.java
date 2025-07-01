@@ -23,7 +23,7 @@ import java.util.List;
 public class OrderConfirmation {
 
     private final User user;
-    OrderService orderService = new OrderService(new ConnectionFactory());
+    OrderService orderService = new OrderService();
 
     public OrderConfirmation(User user) {
         this.user = user;

@@ -8,11 +8,7 @@ import br.com.styleoverflow.styleoverflow.classes.User;
 
 public class AdminService {
 
-    private final ProductService productService;
-
-    public AdminService(ProductService productService) {
-        this.productService = productService;
-    }
+    private final ProductService productService = new ProductService();
 
     public void createProduct(String name, Size size, Gender gender, String color, Integer stock, Double price, String photoUrl, User currentUser) {
         if (currentUser == null || currentUser.getRole() != Role.ADMIN) {

@@ -16,11 +16,7 @@ import br.com.styleoverflow.styleoverflow.enums.Status;
 
 public class OrderService {
 
-    private final ConnectionFactory factory;
-
-    public OrderService(ConnectionFactory factory) {
-        this.factory = new ConnectionFactory();
-    }
+    private final ConnectionFactory factory = new ConnectionFactory();
 
     public void createOrder(Integer userId, Payment paymentType, List<CartProduct> cartItems) {
         Connection connection = factory.getConnection();

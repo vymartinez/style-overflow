@@ -1,10 +1,8 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.classes.User;
+import br.com.styleoverflow.styleoverflow.classes.Admin;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Size;
-import br.com.styleoverflow.styleoverflow.services.AdminService;
-import br.com.styleoverflow.styleoverflow.services.ProductService;
 import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,10 +18,9 @@ import java.util.Arrays;
 
 public class ProductRegister {
 
-    private final AdminService adminService = new AdminService(new ProductService());
-    private User user;
+    private final Admin user;
 
-    public ProductRegister(User user) {this.user = user;}
+    public ProductRegister(Admin user) {this.user = user;}
 
     public VBox getView(Stage stage) {
 
@@ -109,15 +106,14 @@ public class ProductRegister {
 
         registerBtn.setOnAction(e -> {
             try {
-                adminService.createProduct(
+                user.registerProduct(
                     nameField.getText(),
                     sizeField.getValue(),
                     genderField.getValue().equals("Masculino") ? Gender.MALE : Gender.FEMALE,
                     colorField.getText(),
                     Integer.parseInt(stockField.getText()),
                     Double.parseDouble(priceField.getText()),
-                    photoUrlField.getText(),
-                    user
+                    photoUrlField.getText()
                 );
 
                 stage.getScene().setRoot(new AdminDashboard(user).getView(stage));

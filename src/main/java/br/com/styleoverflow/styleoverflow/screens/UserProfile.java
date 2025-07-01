@@ -18,7 +18,6 @@ import java.util.List;
 
 
 public class UserProfile {
-    private final UserService userService = new UserService();
     private final User currentUser;
 
     public UserProfile(User currentUser) {
@@ -207,9 +206,7 @@ public class UserProfile {
             }
 
             try {
-                userService.updateUser(newEmail, newPassword,
-                        newCellphone, newCep, newAddress,
-                        currentUser.getId());
+                currentUser.patchInfo(newEmail, newPassword, newCellphone, newCep, newAddress);
 
                 stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
             } catch (DomainException ex) {
@@ -226,7 +223,7 @@ public class UserProfile {
         deleteButton.setOnAction(e -> {
             AlertUtils.showConfirmation("Tem certeza que deseja excluir sua conta? Esta ação é irreversível.", () -> {
                 try {
-                    userService.deleteUser(currentUser.getId());
+                    currentUser.deleteAccount();
                     stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
                 } catch (Exception ex) {
                     AlertUtils.showError("Erro ao excluir usuário: " + ex.getMessage());

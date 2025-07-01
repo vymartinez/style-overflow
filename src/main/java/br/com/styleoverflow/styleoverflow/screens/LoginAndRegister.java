@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import br.com.styleoverflow.styleoverflow.DomainException;
+import br.com.styleoverflow.styleoverflow.classes.Admin;
 import br.com.styleoverflow.styleoverflow.classes.User;
 import br.com.styleoverflow.styleoverflow.enums.Gender;
 import br.com.styleoverflow.styleoverflow.enums.Role;
@@ -65,8 +66,11 @@ public class LoginAndRegister {
                 feedback.setText("Login realizado com sucesso! Bem-vindo, " + user.getName() + "!");
                 feedback.getStyleClass().setAll("text-success");
 
-                if (user.getRole() == Role.ADMIN) stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
-                else stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
+                if (user.getRole() == Role.ADMIN) {
+                    Admin admin = (Admin) user;
+                    admin.login(stage);
+                }
+                else user.login(stage);
 
             } catch (DomainException ex) {
                 feedback.setText("Erro: " + ex.getMessage());

@@ -16,7 +16,7 @@ import br.com.styleoverflow.styleoverflow.enums.Gender;
 public class UserService {
 
     private final ConnectionFactory factory = new ConnectionFactory();
-    private final OrderService orderService = new OrderService(factory);
+    private final OrderService orderService = new OrderService();
 
     public void createUser(String name, String email, String password, String cellphone, String cpf, String cep, String address, Gender gender) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());

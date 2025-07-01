@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Cart {
 
-    private List<CartProduct> products;
+    private final List<CartProduct> products;
 
     public Cart(List<CartProduct> products) {
         this.products = products;

@@ -4,31 +4,29 @@ import java.util.List;
 
 public class Cart {
 
-    private int id;
-    private List<CartProduct> products;
+    private final List<CartProduct> products;
 
-    public Cart(int id, List<CartProduct> products) {
-        this.id = id;
+    public Cart(List<CartProduct> products) {
         this.products = products;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public List<CartProduct> getProducts() {
         return products;
     }
 
-    public void setProducts(List<CartProduct> products) {
-        this.products = products;
+    public void clear() {
+        products.clear();
+    }
+
+    public void addProduct(CartProduct product) {
+        products.add(product);
+    }
+
+    public void removeProduct(CartProduct product) {
+        products.remove(product);
     }
 
     public double calculateTotal() {
-        return products.stream().mapToDouble(CartProduct::calculateSubtotal).sum();
+        return products.stream().mapToDouble(CartProduct::getSubtotal).sum();
     }
 }

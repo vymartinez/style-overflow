@@ -10,9 +10,35 @@
     -fx-background-position: right bottom;
 }
 
+.product-card {
+    -fx-background-color: #192841;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+}
+
+.btn-primary {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.text-primary {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #192841;
+}
+
 .max-fit {
     -fx-max-width: 400px;
     -fx-fill-width: 100%;
+}
+
+.text-success {
+    -fx-text-fill: #00ffcc;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
 }
 
 .text-primary {
@@ -126,4 +152,40 @@
 .product-list Label {
     -fx-text-fill: white;
     -fx-font-size: 13px;
+}
+.product-item-card {
+    -fx-background-color: #192841;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,12,0,0.1), 51, 0, 110, 0);
+}
+
+.product-item-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,3,3,3.2), 8, 3, 3, 0);
+}
+.spinner, .spinner .text-field {
+    -fx-pref-height: 30px;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-pref-width: 20px;
+    -fx-pref-height: 15px;
+    -fx-background-insets: 0;
+}
+
+.spinner .increment-arrow-button .increment-arrow,
+.spinner .decrement-arrow-button .decrement-arrow {
+    -fx-padding: 2px;
+}
+
+.qr {
+    -fx-background-image: url("qr.png");
+    -fx-background-size: 200 200;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 200px;
 }

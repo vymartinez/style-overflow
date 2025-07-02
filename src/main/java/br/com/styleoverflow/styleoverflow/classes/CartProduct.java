@@ -2,9 +2,9 @@ package br.com.styleoverflow.styleoverflow.classes;
 
 public class CartProduct {
     private Product product;
-    private Integer quantity;
+    private int quantity;
 
-    public CartProduct(Product product, Integer quantity) {
+    public CartProduct(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
@@ -13,20 +13,19 @@ public class CartProduct {
         return product;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
     public void setProduct(Product product) {
         this.product = product;
     }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-
-    public Double calculateSubtotal() {
+    public double getSubtotal() {
         return product.getPrice() * quantity;
     }
 }

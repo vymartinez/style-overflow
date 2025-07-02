@@ -1,4 +1,4 @@
-package br.com.styleoverflow.styleoverflow;
+package br.com.styleoverflow.styleoverflow.utils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

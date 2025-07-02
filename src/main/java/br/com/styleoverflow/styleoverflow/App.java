@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(Stage stage) {
-        Parent root = LoginAndRegister.showLogin(stage);
+        Parent root = new LoginAndRegister().showLogin(stage);
         Scene scene = new Scene(root);
         scene.getStylesheets().addAll(
                 getClass().getResource("/css/style.css").toExternalForm()

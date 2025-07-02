@@ -1,10 +1,16 @@
 package br.com.styleoverflow.styleoverflow.screens;
 
-import br.com.styleoverflow.styleoverflow.WebpToPngConverter;
+import br.com.styleoverflow.styleoverflow.classes.Admin;
+import br.com.styleoverflow.styleoverflow.enums.Gender;
+import br.com.styleoverflow.styleoverflow.enums.Role;
+import br.com.styleoverflow.styleoverflow.enums.Size;
+import br.com.styleoverflow.styleoverflow.utils.AlertUtils;
+import br.com.styleoverflow.styleoverflow.utils.WebpToPngConverter;
 import br.com.styleoverflow.styleoverflow.classes.Product;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -13,17 +19,26 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.swing.*;
+import java.util.Arrays;
 
 public class ProductEdit {
 
     private final Product product;
+    private final Admin user;
 
-    public ProductEdit(Product product) {
+    public ProductEdit(Product product, Admin user) {
         this.product = product;
+        this.user = user;
     }
 
     public VBox getView(Stage stage) {
+
+        if (user == null || user.getRole() != Role.ADMIN) {
+            AlertUtils.showError("Acesso Negado. Você não tem permissão para editar produtos.");
+            stage.getScene().setRoot(new LoginAndRegister().showLogin(stage));
+            return new VBox();
+        }
+
         VBox container = new VBox(20);
         container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(20));
@@ -51,11 +66,17 @@ public class ProductEdit {
         Label priceLabel = new Label("Preço:");
         TextField priceField = new TextField(String.valueOf(product.getPrice()));
 
-        Label sizeLabel = new Label("Tamanhos:");
-        TextField sizeField = new TextField(product.getSize().toString());
+        Label sizeLabel = new Label("Tamanho:");
+        ComboBox<Size> sizeField = new ComboBox<>();
+        sizeField.getItems().addAll(Size.values());
+        sizeField.setValue(product.getSize());
+        sizeField.setPromptText("Selecione o tamanho (P, M, G, etc.)");
 
         Label genderLabel = new Label("Gênero:");
-        TextField genderField = new TextField(product.getGender().toString());
+        ComboBox<String> genderField = new ComboBox<>();
+        genderField.getItems().addAll(Arrays.stream(Gender.values()).map(Gender::toPortugueseString).toList());
+        genderField.setValue(product.getGender().toString());
+        genderField.setPromptText("Selecione o gênero (Masculino ou Feminino)");
 
         Label colorLabel = new Label("Cor:");
         TextField colorField = new TextField(product.getColor());
@@ -95,7 +116,26 @@ public class ProductEdit {
         backButton.getStyleClass().add("btn-primary");
 
         backButton.setOnAction(e -> {
-            stage.getScene().setRoot(new AdminDashboard().getView(stage));
+            stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
+        });
+
+        saveButton.setOnAction(e -> {
+            try {
+                user.patchProduct(
+                    nameField.getText(),
+                    sizeField.getValue(),
+                    genderField.getValue().equals("Masculino") ? Gender.MALE : Gender.FEMALE,
+                    colorField.getText(),
+                    Integer.parseInt(stockField.getText()),
+                    Double.parseDouble(priceField.getText()),
+                    photoUrlField.getText(),
+                    product.getId()
+                );
+
+                stage.getScene().setRoot(new AdminDashboard(user).getView(stage));
+            } catch (Exception exception) {
+                AlertUtils.showError(exception.getMessage());
+            }
         });
 
         container.getChildren().addAll(title, image, form, backButton, saveButton);

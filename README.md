@@ -1,8 +1,8 @@
 # Style Overflow
 
-![GitHub repo size](https://img.shields.io/github/repo-size/iuricode/README-template?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/iuricode/README-template?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/iuricode/README-template?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/vymartinez/style-overflow?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/vymartinez/style-overflow?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/vymartinez/style-overflow?style=for-the-badge)
 
 <img src="src/main/resources/css/git.png" width="100px" alt="Logo - Loja">
 

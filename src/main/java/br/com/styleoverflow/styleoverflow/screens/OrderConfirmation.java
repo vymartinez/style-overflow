@@ -31,7 +31,7 @@ public class OrderConfirmation {
             return new VBox();
         }
 
-        VBox root = new VBox(30);
+        VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.getStyleClass().add("root");
 
@@ -206,6 +206,9 @@ public class OrderConfirmation {
         Button voltarButton = new Button("Voltar");
         voltarButton.getStyleClass().add("btn-primary");
 
+        HBox buttonBox = new HBox(10, voltarButton, confirmarButton);
+        buttonBox.setAlignment(Pos.CENTER);
+
         voltarButton.setOnAction(e -> {
             stage.getScene().setRoot(new CatalogView(stage, user).getView(stage));
         });
@@ -224,7 +227,7 @@ public class OrderConfirmation {
             }
         });
 
-        VBox content = new VBox(20,
+        VBox content = new VBox(15,
                 title,
                 productList,
                 new Label("Método de Pagamento:"),
@@ -233,8 +236,7 @@ public class OrderConfirmation {
                 cupomBox,
                 feedbackLabel,
                 totalLabel,
-                confirmarButton,
-                voltarButton
+                buttonBox
         );
         content.setAlignment(Pos.CENTER);
         root.getChildren().add(content);

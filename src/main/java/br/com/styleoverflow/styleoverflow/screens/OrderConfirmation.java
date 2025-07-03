@@ -138,9 +138,14 @@ public class OrderConfirmation {
         pagamentoBox.setValue(Payment.CARD.toPortgueseString());
         pagamentoBox.getStyleClass().add("combobox");
         pagamentoBox.setOnAction(event -> {
-            String selectedPayment = pagamentoBox.getValue();
-            qrBox.setVisible(selectedPayment.equals("Pix"));
-        });
+                    String selectedPayment = pagamentoBox.getValue();
+                    if (selectedPayment.equals("Pix")) {
+                        qrBox.setVisible(true);
+                        qrBox.getStyleClass().add("qr");
+                    } else {
+                        qrBox.getStyleClass().remove("qr");
+                        qrBox.setVisible(false);
+                    }});
 
         // Cupom
         HBox cupomBox = new HBox(10);
